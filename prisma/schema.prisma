@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User{
+  id_us Int @id @default(autoincrement())
+  name String
+  password String @unique
+  account String @unique
+  age Int
+  course String
+  admins Admin[]
+  students Student[]
+  teachers Teacher[]
+}
+model Admin{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [id], references: [id_us])
+}
+model Student{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [id], references: [id_us])
+  exam_students Exam_Student[]
+  subjects Subject[]
+}
+model Teacher{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [id], references: [id_us])
+  specialty String
+  head_teachers Head_Teacher[]
+  exams Exam[]
+  questions Question[]
+  exam_students Exam_Student[]
+  reevaluations Reevaluation[]
+  subjects Subject[]
+}
+model Head_Teacher{
+  id Int @id @default(autoincrement())
+  teacher Teacher @relation(fields: [id], references: [id])
+  subject Subject[]
+  exams_approved Approved_Exam[]
+}
+model Subject{
+  id Int @id @default(autoincrement())
+  name String
+  head_teacher_id Int
+  head_teacher Head_Teacher @relation(fields: [head_teacher_id ], references: [id])
+  programme String
+  exams Exam[]
+  questions Question[]
+  teachers Teacher[]
+  students Student[]
+  topics Topic[]
+}
+model Exam{
+  id Int @id @default(autoincrement())
+  name String
+  status String
+  difficulty String
+  subject_id Int
+  teacher_id Int
+  parameters_id Int
+  subject Subject @relation(fields: [subject_id], references: [id])
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
+  parameters Parameters @relation(fields: [parameters_id], references: [id])
+  exam_students Exam_Student[]
+  Approved_Exams Approved_Exam[]
+  exam_questions Exam_Question[]
+}
+model Parameters{
+  id Int @id @default(autoincrement())
+  proportion String
+  amount_quest String
+  quest_topics String
+  exams Exam[]
+}
+model Question{
+  id Int @id @default(autoincrement())
+  question_text String
+  difficulty String
+  answer String
+  type String
+  subject_id Int
+  subject Subject @relation(fields: [subject_id], references: [id])
+  sub_topic_id Int
+  topic_id Int
+  sub_topic Sub_Topic @relation(fields: [sub_topic_id,topic_id], references: [id, topic_id])
+  teacher_id Int
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
+  exam_questions Exam_Question[]
+}
+model Topic{
+  id Int @id @default(autoincrement())
+  name String
+  sub_topics Sub_Topic[]
+  subjects Subject[]
+}
+model Sub_Topic{
+  id Int
+  name String
+  topic_id Int
+  topic Topic @relation(fields: [topic_id], references: [id])
+  questions Question[]
+  @@id([id, topic_id])
+ }
+model Date{
+  id Int @id @default(autoincrement())
+  date DateTime
+  Approved_Exams Approved_Exam[]
+}
+model Exam_Student{
+  score Float
+  exam_id Int
+  student_id Int
+  teacher_id Int
+  exam Exam @relation(fields: [exam_id], references: [id])
+  student Student @relation(fields: [student_id], references: [id])
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
+  reevaluations Reevaluation[]
+  @@id([exam_id, student_id])
+}
+model Approved_Exam{
+  date_id Int
+  exam_id Int
+  head_teacher_id Int
+  guidelines String
+  date Date @relation(fields: [date_id], references: [id])
+  exam Exam @relation(fields: [exam_id], references: [id])
+  head_teacher Head_Teacher @relation(fields: [head_teacher_id], references: [id])
+  @@id([date_id, exam_id,head_teacher_id])
+}
+model Exam_Question{
+  exam_id Int
+  question_id Int
+  exam Exam @relation(fields: [exam_id], references: [id])
+  question Question @relation(fields: [question_id], references: [id])
+  answers Answer[]
+  @@id([exam_id, question_id])
+}
+model Answer{
+  exam_id Int
+  question_id Int
+  student_id Int
+  answer_text String
+  exam_question Exam_Question @relation(fields: [exam_id, question_id], references: [exam_id, question_id])
+  @@id([exam_id, question_id, student_id])
+}
+model Reevaluation{
+  exam_id Int
+  student_id Int
+  teacher_id Int
+  score Float
+  exam_student Exam_Student @relation(fields: [exam_id, student_id], references: [exam_id, student_id])
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
+  @@id([exam_id, student_id, teacher_id])
+}

@@ -32,6 +32,7 @@ model Student{
   user User @relation(fields: [id], references: [id_us])
   exam_students Exam_Student[]
   subjects Subject[]
+  answer Answer[]
 }
 model Teacher{
   id Int @id @default(autoincrement())
@@ -49,6 +50,7 @@ model Head_Teacher{
   teacher Teacher @relation(fields: [id], references: [id])
   subject Subject[]
   exams_approved Approved_Exam[]
+  exam Exam[]
 }
 model Subject{
   id Int @id @default(autoincrement())
@@ -70,9 +72,11 @@ model Exam{
   subject_id Int
   teacher_id Int
   parameters_id Int
+  head_teacher_id Int
   subject Subject @relation(fields: [subject_id], references: [id])
   teacher Teacher @relation(fields: [teacher_id], references: [id])
   parameters Parameters @relation(fields: [parameters_id], references: [id])
+  head_teacher Head_Teacher @relation(fields: [head_teacher_id], references:[id])
   exam_students Exam_Student[]
   Approved_Exams Approved_Exam[]
   exam_questions Exam_Question[]
@@ -152,6 +156,7 @@ model Answer{
   question_id Int
   student_id Int
   answer_text String
+  student Student @relation(fields: [student_id], references: [id])
   exam_question Exam_Question @relation(fields: [exam_id, question_id], references: [exam_id, question_id])
   @@id([exam_id, question_id, student_id])
 }

@@ -19,6 +19,7 @@ model User{
   account String @unique
   age Int
   course String
+  role Role @default(STUDENT)
   admins Admin[]
   students Student[]
   teachers Teacher[]
@@ -37,6 +38,7 @@ model Student{
 model Teacher{
   id Int @id @default(autoincrement())
   user User @relation(fields: [id], references: [id_us])
+  isHeadTeacher Boolean @default(false)
   specialty String
   head_teachers Head_Teacher[]
   exams Exam[]
@@ -168,4 +170,9 @@ model Reevaluation{
   exam_student Exam_Student @relation(fields: [exam_id, student_id], references: [exam_id, student_id])
   teacher Teacher @relation(fields: [teacher_id], references: [id])
   @@id([exam_id, student_id, teacher_id])
+}
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
 }

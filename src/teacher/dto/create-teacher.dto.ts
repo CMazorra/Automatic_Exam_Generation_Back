@@ -1,4 +1,4 @@
-import { IsString, IsInt, Min, MaxLength, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsString, IsInt, Min, MaxLength, IsNotEmpty } from 'class-validator';
 
 export class CreateTeacherDto {
    @IsInt()
@@ -10,5 +10,7 @@ export class CreateTeacherDto {
    @MaxLength(100)
    @IsNotEmpty()
    specialty: string;
-
+ 
+   @IsBoolean()
+   isHeadTeacher?: boolean = false;
 }

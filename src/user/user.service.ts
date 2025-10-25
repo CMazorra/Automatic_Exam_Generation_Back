@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { Role } from '../../generated/prisma';
+import { HeadTeacher } from 'src/head_teacher/entities/head_teacher.entity';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService){}
 
   async create(data: CreateUserDto) {
-    return this.prisma.user.create({data});
+    const salt = await bcrypt.genSalt(10);   
+    const hashedPassword = await bcrypt.hash(data.password, salt)
+    return this.prisma.user.create({data: {...data, password: hashedPassword,},});
   }
 
   async findAll() {
@@ -20,10 +25,33 @@ export class UserService {
   }
 
   async update(id: number, data: UpdateUserDto) {
-    return this.prisma.user.update({where: {id_us: id}, data});
+    let updatedData = {...data};
+    if(data.password){
+      const salt = await bcrypt.genSalt(10);
+      updatedData.password = await bcrypt.hash(data.password, salt);
+    }
+    return this.prisma.user.update({where: {id_us: id}, data: updatedData,});
   }
 
   async remove(id: number) {
     return this.prisma.user.delete({where: {id_us: id}})
+  }
+
+  async login(account: string, password: string){
+      const user = await this.prisma.user.findUnique({where: { account}, include: {teachers: true, students: true, admins:true},});
+      if(!user){
+         throw new UnauthorizedException('Cuenta no encontrada');
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if(!passwordMatch){
+        throw new UnauthorizedException('Contraseña incorrecta');
+      }
+
+      if(user.role === Role.TEACHER && user.teachers[0].isHeadTeacher){
+        return { user, headTeacher: true} 
+      }
+      return {user, headTeacher: false}
+
   }
 }

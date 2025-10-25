@@ -31,4 +31,10 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @Post('login')
+  async login(@Body() body: { account: string; password: string }) {
+    const { account, password } = body;
+    return this.userService.login(account, password);
+  }
 }

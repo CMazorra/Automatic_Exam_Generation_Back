@@ -8,8 +8,8 @@ async function main() {
   const adminService = new AdminService(prisma);
 
   const students: CreateAdminDto[] = [
-    { id: 24 }, 
-    { id: 25 },
+    { id: 11 }, 
+    { id: 12 },
   ];
 
   for (const student of students) {

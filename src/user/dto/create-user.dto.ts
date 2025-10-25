@@ -1,4 +1,5 @@
-import { IsString, IsInt, Min, MaxLength, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsString, IsInt, Min, MaxLength, IsNotEmpty } from 'class-validator';
+import { Role } from '../../../generated/prisma';
 
 export class CreateUserDto {
   @IsString()
@@ -24,4 +25,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @MaxLength(100)
   course: string;
+
+  @IsEnum(Role)
+  role : Role;
 }

@@ -1,6 +1,7 @@
 import { PrismaService } from './prisma/prisma.service';
 import { UserService } from './user/user.service';
 import { CreateUserDto } from './user/dto/create-user.dto';
+import {Role} from '../generated/prisma';
 import 'dotenv/config';
 
 async function main() {
@@ -8,18 +9,24 @@ async function main() {
   const userService = new UserService(prisma);
 
   const users: CreateUserDto[] = [
-    { name: 'Carlos Pérez', account: 'carlos01', password: 'abc123', age: 30, course: 'Physics' },
-    { name: 'Lucía Gómez', account: 'lucia02', password: 'pass123', age: 22, course: 'Chemistry' },
-    { name: 'Mario Torres', account: 'mario03', password: 'm1234', age: 28, course: 'History' },
-    { name: 'Ana Rodríguez', account: 'ana04', password: 'qwerty', age: 27, course: 'Literature' },
-    { name: 'David Sánchez', account: 'david05', password: 'admin', age: 24, course: 'Biology' },
-    { name: 'Laura Fernández', account: 'laura06', password: 'test123', age: 21, course: 'Engineering' },
-    { name: 'Pedro Castillo', account: 'pedro07', password: 'password', age: 29, course: 'Math' },
-    { name: 'Sofía Herrera', account: 'sofia08', password: 'sofia8', age: 26, course: 'Philosophy' },
-    { name: 'Andrés Vargas', account: 'andres09', password: 'andres9', age: 23, course: 'Computer Science' },
-    { name: 'Camila Ruiz', account: 'camila10', password: 'cruiz10', age: 22, course: 'Economics' },
-    { name: 'Miguel Torres', account: 'miguel11', password: 'mto11', age: 25, course: 'Art' },
-  ];
+  // Estudiantes
+  { name: 'Juan Pérez', account: 'juan01', password: '1234', age: 20, course: 'Matemáticas', role: Role.STUDENT },
+  { name: 'María López', account: 'maria02', password: '1234', age: 21, course: 'Física', role: Role.STUDENT },
+  { name: 'Pedro Sánchez', account: 'pedro03', password: '1234', age: 22, course: 'Química', role: Role.STUDENT },
+  { name: 'Lucía Fernández', account: 'lucia04', password: '1234', age: 19, course: 'Historia', role: Role.STUDENT },
+  { name: 'Miguel Torres', account: 'miguel05', password: '1234', age: 23, course: 'Biología', role: Role.STUDENT },
+
+  // Profesores
+  { name: 'Laura Martínez', account: 'laura01', password: '1234', age: 35, course: 'Matemáticas', role: Role.TEACHER },
+  { name: 'Carlos Gómez', account: 'carlos02', password: '1234', age: 40, course: 'Física', role: Role.TEACHER },
+  { name: 'Ana Rodríguez', account: 'ana03', password: '1234', age: 38, course: 'Química', role: Role.TEACHER },
+  { name: 'José Ramírez', account: 'jose04', password: '1234', age: 42, course: 'Historia', role: Role.TEACHER },
+  { name: 'Sofía Herrera', account: 'sofia05', password: '1234', age: 37, course: 'Biología', role: Role.TEACHER },
+
+  // Administradores
+  { name: 'Diego Vargas', account: 'admin01', password: 'admin123', age: 30, course: '', role: Role.ADMIN },
+  { name: 'Mariana Ruiz', account: 'admin02', password: 'admin123', age: 28, course: '', role: Role.ADMIN },
+];
 
   for (const user of users) {
     const created = await userService.create(user);

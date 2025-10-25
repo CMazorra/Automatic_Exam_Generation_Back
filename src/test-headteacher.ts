@@ -8,9 +8,8 @@ async function main() {
   const headteacherService = new HeadTeacherService(prisma);
 
   const students: CreateHeadTeacherDto[] = [
-    { id: 20 }, 
-    { id: 22 },
-    { id: 23 },
+    { id: 6 }, 
+    { id: 7 },
   ];
 
   for (const student of students) {

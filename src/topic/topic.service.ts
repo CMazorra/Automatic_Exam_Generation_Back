@@ -1,0 +1,34 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateTopicDto } from './dto/create-topic.dto';
+import { UpdateTopicDto } from './dto/update-topic.dto';
+
+@Injectable()
+export class TopicService {
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateTopicDto) {
+    return this.prisma.topic.create({ data });
+  }
+
+  findAll() {
+    return this.prisma.topic.findMany({ include: { sub_topics: true } });
+  }
+
+  async findOne(id: number) {
+    const topic = await this.prisma.topic.findUnique({
+      where: { id },
+      include: { sub_topics: true },
+    });
+    if (!topic) throw new NotFoundException('Tema no encontrado');
+    return topic;
+  }
+
+  update(id: number, data: UpdateTopicDto) {
+    return this.prisma.topic.update({ where: { id }, data });
+  }
+
+  remove(id: number) {
+    return this.prisma.topic.delete({ where: { id } });
+  }
+}

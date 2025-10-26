@@ -8,5 +8,5 @@ export class CreateSubjectDto {
   head_teacher_id: number;
 
   @IsString()
-  programme: string;
+  program: string;
 }

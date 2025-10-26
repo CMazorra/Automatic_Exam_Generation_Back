@@ -25,11 +25,11 @@ model Admin {
 }
 
 model Student {
-  id            Int            @id @default(autoincrement())
-  answers       Answer[]
+  id  Int @id @default(autoincrement())
+  answers Answer[]
   exam_students Exam_Student[]
   subjects Subject[]
-  answer Answer[]
+  user User @relation(fields: [id], references: [id_us])
 }
 model Teacher{
   id Int @id @default(autoincrement())
@@ -38,32 +38,31 @@ model Teacher{
   specialty String
   head_teachers Head_Teacher[]
   exams Exam[]
-  questions Question[]
   exam_students Exam_Student[]
-  head_teachers Head_Teacher?
   questions     Question[]
   reevaluations Reevaluation[]
-  user          User           @relation(fields: [id], references: [id_us])
-  subjects      Subject[]      @relation("SubjectToTeacher")
+  subjects      Subject[]
 }
 
 model Head_Teacher {
-  id             Int             @id @default(autoincrement())
+  id Int @id @default(autoincrement())
   exams_approved Approved_Exam[]
   exam Exam[]
+  teacher Teacher @relation(fields: [id], references: [id])
+  subject  Subject[]
 }
 
 model Subject {
   id              Int          @id @default(autoincrement())
   name            String
   head_teacher_id Int
-  programme       String
+  program       String
   exams           Exam[]
   questions       Question[]
   head_teacher    Head_Teacher @relation(fields: [head_teacher_id], references: [id])
-  students        Student[]    @relation("StudentToSubject")
-  teachers        Teacher[]    @relation("SubjectToTeacher")
-  topics          Topic[]      @relation("SubjectToTopic")
+  students        Student[]    
+  teachers        Teacher[]   
+  topics          Topic[] 
 }
 model Exam{
   id Int @id @default(autoincrement())
@@ -111,7 +110,7 @@ model Topic {
   id         Int         @id @default(autoincrement())
   name       String
   sub_topics Sub_Topic[]
-  subjects   Subject[]   @relation("SubjectToTopic")
+  subjects   Subject[] 
 }
 
 model Sub_Topic {

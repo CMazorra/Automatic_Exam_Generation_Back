@@ -8,10 +8,22 @@ import { ApprovedExamModule } from './modules/exam_related/approved_exam/approve
 import { ExamQuestionModule } from './modules/exam_related/exam_question/exam_question.module';
 import { AnswerModule } from './modules/exam_related/answer/answer.module';
 import { ReevaluationModule } from './modules/exam_related/reevaluation/reevaluation.module';
+import { UserModule } from './user/user.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { StudentModule } from './student/student.module';
+import { AdminModule } from './admin/admin.module';
+import { HeadTeacherModule } from './head_teacher/head_teacher.module';
+import { TopicModule } from './topic/topic.module';
+import { SubTopicModule } from './sub-topic/sub-topic.module';
+import { SubjectModule } from './subject/subject.module';
+import { QuestionModule } from './question/question.module';
+import { ParametersModule } from './parameters/parameters.module';
 
 @Module({
-  imports: [PrismaModule, ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule],
-  controllers: [AppController],
+  imports: [ ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
+    PrismaModule, UserModule, TeacherModule, StudentModule, AdminModule, HeadTeacherModule,
+     TopicModule,SubTopicModule,SubjectModule, QuestionModule, ParametersModule],
+   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

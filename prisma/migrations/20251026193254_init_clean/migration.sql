@@ -1,3 +1,19 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'TEACHER', 'STUDENT');
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id_us" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "account" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "course" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'STUDENT',
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id_us")
+);
+
 -- CreateTable
 CREATE TABLE "Admin" (
     "id" SERIAL NOT NULL,
@@ -15,6 +31,7 @@ CREATE TABLE "Student" (
 -- CreateTable
 CREATE TABLE "Teacher" (
     "id" SERIAL NOT NULL,
+    "isHeadTeacher" BOOLEAN NOT NULL DEFAULT false,
     "specialty" TEXT NOT NULL,
 
     CONSTRAINT "Teacher_pkey" PRIMARY KEY ("id")
@@ -32,7 +49,7 @@ CREATE TABLE "Subject" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "head_teacher_id" INTEGER NOT NULL,
-    "programme" TEXT NOT NULL,
+    "program" TEXT NOT NULL,
 
     CONSTRAINT "Subject_pkey" PRIMARY KEY ("id")
 );
@@ -46,6 +63,7 @@ CREATE TABLE "Exam" (
     "subject_id" INTEGER NOT NULL,
     "teacher_id" INTEGER NOT NULL,
     "parameters_id" INTEGER NOT NULL,
+    "head_teacher_id" INTEGER NOT NULL,
 
     CONSTRAINT "Exam_pkey" PRIMARY KEY ("id")
 );
@@ -70,7 +88,7 @@ CREATE TABLE "Question" (
     "subject_id" INTEGER NOT NULL,
     "sub_topic_id" INTEGER NOT NULL,
     "topic_id" INTEGER NOT NULL,
-    "creator_id" INTEGER NOT NULL,
+    "teacher_id" INTEGER NOT NULL,
 
     CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
 );
@@ -111,13 +129,13 @@ CREATE TABLE "Exam_Student" (
 );
 
 -- CreateTable
-CREATE TABLE "Exam_Approval" (
+CREATE TABLE "Approved_Exam" (
     "date_id" INTEGER NOT NULL,
     "exam_id" INTEGER NOT NULL,
     "head_teacher_id" INTEGER NOT NULL,
     "guidelines" TEXT NOT NULL,
 
-    CONSTRAINT "Exam_Approval_pkey" PRIMARY KEY ("date_id","exam_id","head_teacher_id")
+    CONSTRAINT "Approved_Exam_pkey" PRIMARY KEY ("date_id","exam_id","head_teacher_id")
 );
 
 -- CreateTable
@@ -173,6 +191,12 @@ CREATE TABLE "_SubjectToTopic" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_password_key" ON "User"("password");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_account_key" ON "User"("account");
+
+-- CreateIndex
 CREATE INDEX "_StudentToSubject_B_index" ON "_StudentToSubject"("B");
 
 -- CreateIndex
@@ -206,13 +230,16 @@ ALTER TABLE "Exam" ADD CONSTRAINT "Exam_teacher_id_fkey" FOREIGN KEY ("teacher_i
 ALTER TABLE "Exam" ADD CONSTRAINT "Exam_parameters_id_fkey" FOREIGN KEY ("parameters_id") REFERENCES "Parameters"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Question" ADD CONSTRAINT "Question_subject_id_fkey" FOREIGN KEY ("subject_id") REFERENCES "Subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Exam" ADD CONSTRAINT "Exam_head_teacher_id_fkey" FOREIGN KEY ("head_teacher_id") REFERENCES "Head_Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Question" ADD CONSTRAINT "Question_sub_topic_id_topic_id_fkey" FOREIGN KEY ("sub_topic_id", "topic_id") REFERENCES "Sub_Topic"("id", "topic_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Question" ADD CONSTRAINT "Question_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Question" ADD CONSTRAINT "Question_subject_id_fkey" FOREIGN KEY ("subject_id") REFERENCES "Subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Question" ADD CONSTRAINT "Question_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sub_Topic" ADD CONSTRAINT "Sub_Topic_topic_id_fkey" FOREIGN KEY ("topic_id") REFERENCES "Topic"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -227,13 +254,13 @@ ALTER TABLE "Exam_Student" ADD CONSTRAINT "Exam_Student_student_id_fkey" FOREIGN
 ALTER TABLE "Exam_Student" ADD CONSTRAINT "Exam_Student_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Exam_Approval" ADD CONSTRAINT "Exam_Approval_date_id_fkey" FOREIGN KEY ("date_id") REFERENCES "Date"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Approved_Exam" ADD CONSTRAINT "Approved_Exam_date_id_fkey" FOREIGN KEY ("date_id") REFERENCES "Date"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Exam_Approval" ADD CONSTRAINT "Exam_Approval_exam_id_fkey" FOREIGN KEY ("exam_id") REFERENCES "Exam"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Approved_Exam" ADD CONSTRAINT "Approved_Exam_exam_id_fkey" FOREIGN KEY ("exam_id") REFERENCES "Exam"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Exam_Approval" ADD CONSTRAINT "Exam_Approval_head_teacher_id_fkey" FOREIGN KEY ("head_teacher_id") REFERENCES "Head_Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Approved_Exam" ADD CONSTRAINT "Approved_Exam_head_teacher_id_fkey" FOREIGN KEY ("head_teacher_id") REFERENCES "Head_Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Exam_Question" ADD CONSTRAINT "Exam_Question_exam_id_fkey" FOREIGN KEY ("exam_id") REFERENCES "Exam"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -243,6 +270,9 @@ ALTER TABLE "Exam_Question" ADD CONSTRAINT "Exam_Question_question_id_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "Answer" ADD CONSTRAINT "Answer_exam_id_question_id_fkey" FOREIGN KEY ("exam_id", "question_id") REFERENCES "Exam_Question"("exam_id", "question_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Answer" ADD CONSTRAINT "Answer_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reevaluation" ADD CONSTRAINT "Reevaluation_exam_id_student_id_fkey" FOREIGN KEY ("exam_id", "student_id") REFERENCES "Exam_Student"("exam_id", "student_id") ON DELETE RESTRICT ON UPDATE CASCADE;

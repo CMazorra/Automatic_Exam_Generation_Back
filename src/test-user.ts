@@ -1,7 +1,7 @@
 import { PrismaService } from './prisma/prisma.service';
 import { UserService } from './user/user.service';
 import { CreateUserDto } from './user/dto/create-user.dto';
-import {Role} from '../generated/prisma';
+import {Role} from '@prisma/client';
 import 'dotenv/config';
 
 async function main() {

@@ -81,6 +81,6 @@
     "testEnvironment": "node"
   },
   "prisma": {
-    "seed": "ts-node prisma/seeds.ts"
+    "seed": "ts-node -r tsconfig-paths/register prisma/seeds.ts"
   }
 }

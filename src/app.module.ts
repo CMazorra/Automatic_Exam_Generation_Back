@@ -7,9 +7,10 @@ import { TeacherModule } from './teacher/teacher.module';
 import { StudentModule } from './student/student.module';
 import { AdminModule } from './admin/admin.module';
 import { HeadTeacherModule } from './head_teacher/head_teacher.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, TeacherModule, StudentModule, AdminModule, HeadTeacherModule],
+  imports: [PrismaModule, UserModule, TeacherModule, StudentModule, AdminModule, HeadTeacherModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

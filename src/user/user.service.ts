@@ -3,8 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Role } from '../../generated/prisma';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
+import { HeadTeacher } from 'src/head_teacher/entities/head_teacher.entity';
 
 @Injectable()
 export class UserService {

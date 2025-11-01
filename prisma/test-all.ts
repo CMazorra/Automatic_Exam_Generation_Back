@@ -6,11 +6,13 @@ import { AdminService } from '../src/admin/admin.service';
 import { HeadTeacherService } from '../src/head_teacher/head_teacher.service';
 import { CreateUserDto } from '../src/user/dto/create-user.dto';
 import { Role } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 import 'dotenv/config';
 
 async function main() {
   const prisma = new PrismaService();
-  const userService = new UserService(prisma);
+  const jwt = new JwtService({secret: 'clave_de_prueba'});
+  const userService = new UserService(prisma, jwt);
   const studentService = new StudentService(prisma);
   const teacherService = new TeacherService(prisma);
   const adminService = new AdminService(prisma);

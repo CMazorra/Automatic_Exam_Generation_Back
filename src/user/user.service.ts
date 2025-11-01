@@ -8,7 +8,7 @@ import { HeadTeacher } from 'src/head_teacher/entities/head_teacher.entity';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService){}
+  constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService){}
 
   async create(data: CreateUserDto) {
     const salt = await bcrypt.genSalt(10);   
@@ -48,10 +48,12 @@ export class UserService {
         throw new UnauthorizedException('Contraseña incorrecta');
       }
 
-      if(user.role === Role.TEACHER && user.teachers[0].isHeadTeacher){
-        return { user, headTeacher: true} 
-      }
-      return {user, headTeacher: false}
+      const payload = { id: user.id_us, account: user.account, role: user.role };
+      const token = this.jwtService.sign(payload);
+
+      const headTeacher = user.role === Role.TEACHER && user.teachers[0]?.isHeadTeacher;
+
+      return { user, headTeacher, token };
 
   }
 }

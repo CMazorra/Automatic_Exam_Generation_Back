@@ -1,4 +1,4 @@
-import { Injectable, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -55,5 +55,9 @@ export class UserService {
 
       return { user, headTeacher, token };
 
+  }
+
+  async logout() {
+    return { message: 'Sesión cerrada', clearCookie: true };
   }
 }

@@ -7,41 +7,75 @@ import { UpdateApprovedExamDto } from './dto/update-approved_exam.dto';
 export class approved_examService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: CreateApprovedExamDto) {
-    return this.prisma.approved_Exam.create({ data });
+  async create(data: CreateApprovedExamDto) {
+    const {exam_id, head_teacher_id, guidelines} = data;
+
+    const exam = await this.prisma.exam.findUnique({
+      where: { id: exam_id },
+    });
+
+    if(!exam){
+      throw new Error('Exam not found');
+    }
+
+    const lower = guidelines.toLowerCase();
+    const isRejected = lower.includes('rechazado')
+
+    await this.prisma.exam.update({
+      where: {id:exam_id},
+      data: {status : isRejected ? 'rejected' : 'approved'},
+    });
+
+    if (isRejected)
+    {
+      await this.prisma.exam.create({
+        data: {
+          name: `${exam.name} (Corrections Required`,
+          status: 'pending',
+          difficulty: exam.difficulty,
+          subject_id: exam.subject_id,
+          teacher_id: exam.teacher_id,
+          parameters_id : exam.parameters_id,
+          head_teacher_id: exam.head_teacher_id,
+        },
+      });
+    }
+
+    return this.prisma.approved_Exam.create({
+      data: { exam_id, head_teacher_id, guidelines},
+    });
   }
+
   findAll() {
     return this.prisma.approved_Exam.findMany({
       include: {
-        date: true,
         exam: true,
         head_teacher: true,
       },
     });
   }
 
-  findOne(date_id: number, exam_id: number, head_teacher_id: number) {
+  findOne(date: Date, exam_id: number, head_teacher_id: number) {
     return this.prisma.approved_Exam.findUnique({
       where:{
-        date_id_exam_id_head_teacher_id: {
-          date_id,
+        date_exam_id_head_teacher_id: {
+          date,
           exam_id,
           head_teacher_id,
       },
     },
     include: {
-        date: true,
         exam: true,
         head_teacher: true,
     },
     });
   }
 
-  update(date_id: number, exam_id: number, head_teacher_id: number, data: UpdateApprovedExamDto) {
+  update(date: Date, exam_id: number, head_teacher_id: number, data: UpdateApprovedExamDto) {
     return this.prisma.approved_Exam.update({
       where: {
-        date_id_exam_id_head_teacher_id: {
-          date_id,
+        date_exam_id_head_teacher_id: {
+          date,
           exam_id,
           head_teacher_id,
         },
@@ -50,11 +84,11 @@ export class approved_examService {
     });
   }
 
-  remove(date_id: number, exam_id: number, head_teacher_id: number) {
+  remove(date: Date, exam_id: number, head_teacher_id: number) {
     return this.prisma.approved_Exam.delete({
       where: {
-        date_id_exam_id_head_teacher_id: {
-          date_id,
+        date_exam_id_head_teacher_id: {
+          date,
           exam_id,
           head_teacher_id,
         },

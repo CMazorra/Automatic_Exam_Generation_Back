@@ -47,11 +47,10 @@ export class UserService {
       if(!passwordMatch){
         throw new UnauthorizedException('Contraseña incorrecta');
       }
-
-      const payload = { id: user.id_us, account: user.account, role: user.role };
+      const headTeacher = user.role === Role.TEACHER && user.teachers[0]?.isHeadTeacher;
+      const payload = { id: user.id_us, account: user.account, role: user.role, headTeacher };
       const token = this.jwtService.sign(payload);
 
-      const headTeacher = user.role === Role.TEACHER && user.teachers[0]?.isHeadTeacher;
 
       return { user, headTeacher, token };
 

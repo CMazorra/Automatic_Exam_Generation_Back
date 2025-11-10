@@ -10,6 +10,17 @@ async function bootstrap() {
      .setTitle('Script')
      .setDescription('API description')
      .setVersion('0.1')
+    //   .addBearerAuth(  // 👈 ESTA LÍNEA AGREGA EL BOTÓN “Authorize”
+    //   {
+    //     type: 'http',
+    //     scheme: 'bearer',
+    //     bearerFormat: 'JWT',
+    //     name: 'JWT',
+    //     description: 'Introduce tu token JWT aquí',
+    //     in: 'header',
+    //   },
+    //   'access-token', // nombre de la referencia, puedes dejarlo así
+    // )
      .build()
     
      const document = SwaggerModule.createDocument(app, config);

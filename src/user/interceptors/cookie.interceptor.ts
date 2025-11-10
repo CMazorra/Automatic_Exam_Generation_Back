@@ -19,8 +19,9 @@ export class CookieInterceptor implements NestInterceptor {
             maxAge: 1000 * 60 * 60 * 24,            // 1 día
           });
 
-          // Eliminamos token del body si queremos que no se envíe en JSON
-          delete data.token;
+           if (process.env.NODE_ENV === 'production') {
+            delete data.token;
+          }
         }
       }),
     );

@@ -2,14 +2,19 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
+import { GenerateExamDto } from './dto/generated-exam.dto';
 
 @Controller('exam')
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
   @Post()
-  create(@Body() createExamDto: CreateExamDto) {
+   create(@Body() createExamDto: CreateExamDto) {
     return this.examService.create(createExamDto);
+  } 
+  @Post('generate')
+  generated(@Body() generatedexamDto : GenerateExamDto) {
+    return this.examService.generated(generatedexamDto);
   }
 
   @Get()
@@ -32,3 +37,5 @@ export class ExamController {
     return this.examService.remove(+id);
   }
 }
+
+

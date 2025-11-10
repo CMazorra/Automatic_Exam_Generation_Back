@@ -14,7 +14,6 @@ export class TopicService {
   findAll() {
     return this.prisma.topic.findMany({ include: { sub_topics: true } });
   }
-
   async findOne(id: number) {
     const topic = await this.prisma.topic.findUnique({
       where: { id },
@@ -31,4 +30,25 @@ export class TopicService {
   remove(id: number) {
     return this.prisma.topic.delete({ where: { id } });
   }
+
+async getTopicsBySubject(subjectId: number) {
+  return this.prisma.topic.findMany({
+    where: {
+      subjects: {
+        some: { id: subjectId }, // 👈 esto filtra los topics que tienen relación con esa asignatura
+      },
+    },
+    include: {
+      sub_topics: true, // 👈 opcional: incluye también los subtemas si quieres
+    },
+  });
+}
+
+
+
+
+
+
+
+
 }

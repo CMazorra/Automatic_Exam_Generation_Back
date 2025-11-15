@@ -17,6 +17,26 @@ export class TeacherController {
     return this.teacherService.findAll();
   }
 
+  @Get('all')
+  findAllAll() {
+    return this.teacherService.findAllAll();
+  }
+
+  @Get('deleted')
+  findAllDeleted() {
+    return this.teacherService.findAllDeleted();
+  }
+
+  @Get('all/:id')
+  findOneAll(@Param('id') id: string) {
+    return this.teacherService.findOneAll(+id);
+  }
+
+  @Get('deleted/:id')
+  findOneDeleted(@Param('id') id: string) {
+    return this.teacherService.findOneDeleted(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.teacherService.findOne(+id);

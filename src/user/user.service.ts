@@ -17,11 +17,26 @@ export class UserService {
   }
 
   async findAll() {
+    return this.prisma.user.findMany({where: {isActive: true}});
+  }
+
+  async findAllAll() {
     return this.prisma.user.findMany();
+  }
+  async findAllDelete() {
+    return this.prisma.user.findMany({where: {isActive: false}});
   }
 
   async findOne(id: number) {
+    return this.prisma.user.findFirst({ where: {id_us: id, isActive:true}});
+  }
+ 
+  async findOneAll(id: number) {
     return this.prisma.user.findUnique({ where: {id_us: id}});
+  }
+
+  async findOneDelete(id: number) {
+    return this.prisma.user.findFirst({ where: {id_us: id, isActive:false}});
   }
 
   async update(id: number, data: UpdateUserDto) {
@@ -34,12 +49,12 @@ export class UserService {
   }
 
   async remove(id: number) {
-    return this.prisma.user.delete({where: {id_us: id}})
+    return this.prisma.user.update({where: {id_us:id}, data: {isActive: false}});
   }
 
   async login(account: string, password: string){
-      const user = await this.prisma.user.findUnique({where: { account}, include: {teachers: true, students: true, admins:true},});
-      if(!user){
+      const user = await this.prisma.user.findUnique({where: { account}, include: {teachers: true, students: true},});
+      if(!user || user.isActive == false){
          throw new UnauthorizedException('Cuenta no encontrada');
       }
 

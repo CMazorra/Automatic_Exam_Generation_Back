@@ -15,9 +15,29 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Get('all')
+  findAllAll() {
+    return this.userService.findAllAll();
+  }
+
+  @Get('deleted/all')
+  findAllDelete() {
+    return this.userService.findAllDelete();
+  }
+
   @Get()
-  findAll() {
+  findAllActive() {
     return this.userService.findAll();
+  }
+
+  @Get('all/:id')
+  findOneAll(@Param('id') id: string) {
+    return this.userService.findOneAll(+id);
+  }
+
+  @Get('deleted/:id')
+  findOneDelete(@Param('id') id: string) {
+    return this.userService.findOneDelete(+id);
   }
 
   @Get(':id')

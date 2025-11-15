@@ -4,7 +4,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 // import { RolesGuard } from '../auth/roles.guard';
 // import { Roles } from '../auth/roles.decorator';
-import { Role } from '@prisma/client';
+
 
 @Controller('student')
 //@UseGuards(RolesGuard)
@@ -19,14 +19,34 @@ export class StudentController {
 
   @Get()
  // @Roles(Role.ADMIN, Role.TEACHER)
-  findAll() {
+  findAllActive() {
     return this.studentService.findAll();
+  }
+
+  @Get('all')
+  findAllAll() {
+    return this.studentService.findAllAll();
+  }
+
+  @Get('deleted/all')
+  findAllDeleted() {
+    return this.studentService.findAllDeleted();
   }
 
   @Get(':id')
   //@Roles(Role.ADMIN, Role.TEACHER)
   findOne(@Param('id') id: string) {
     return this.studentService.findOne(+id);
+  }
+
+  @Get('all/:id')
+  findOneAll(@Param('id') id: string) {
+    return this.studentService.findOneAll(+id);
+  }
+
+  @Get('deleted/:id')
+  findOneDeleted(@Param('id') id: string) {
+    return this.studentService.findOneDeleted(+id);
   }
 
   @Patch(':id')

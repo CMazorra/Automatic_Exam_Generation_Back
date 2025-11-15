@@ -25,6 +25,15 @@ export class AnswerController {
   ) {
     return this.answerService.findOne(+exam_id, +question_id, +student_id);
   }
+  
+ @Get(':exam_id/:student_id')
+   findByExamAndStudent(
+    @Param('exam_id') exam_id: string,
+    @Param('student_id') student_id: string,
+   ) {
+    return this.answerService.getAnswerByStudent(+exam_id, +student_id);
+   }
+
 
   @Patch(':exam_id/:question_id/:student_id')
   update(

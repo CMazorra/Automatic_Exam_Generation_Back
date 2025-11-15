@@ -10,10 +10,9 @@ export async function seed_exams(prisma: PrismaClient) {
   const headTeachers = await prisma.head_Teacher.findMany();
   const parameters = await prisma.parameters.findMany();
   const questions = await prisma.question.findMany();
-  const dates = await prisma.date.findMany();
 
-  if (!subjects.length || !teachers.length || !students.length || !headTeachers.length || !parameters.length || !questions.length || !dates.length) {
-    console.log('❌ Falta poblar datos base (Subjects, Teachers, Students, HeadTeachers, Parameters, Questions, Dates)');
+  if (!subjects.length || !teachers.length || !students.length || !headTeachers.length || !parameters.length || !questions.length ) {
+    console.log('❌ Falta poblar datos base (Subjects, Teachers, Students, HeadTeachers, Parameters, Questions)');
     return;
   }
 
@@ -61,7 +60,6 @@ export async function seed_exams(prisma: PrismaClient) {
 
   // Approved_Exam
   const approvedExams = createdExams.map((exam, idx) => ({
-    date_id: dates[idx % dates.length].id,
     exam_id: exam.id,
     head_teacher_id: exam.head_teacher_id,
     guidelines: 'Siga las instrucciones correctamente',

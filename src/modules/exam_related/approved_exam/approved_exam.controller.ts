@@ -12,6 +12,11 @@ export class ApprovedExamController {
     return this.approvedExamService.create(createApprovedExamDto);
   }
 
+  @Get()
+  findAll() {
+    return this.approvedExamService.findAll();
+  }
+
  @Get(':date/:exam_id/:head_teacher_id')
   findOne(
     @Param('date') date: string,

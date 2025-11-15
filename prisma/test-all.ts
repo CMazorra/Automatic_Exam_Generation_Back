@@ -2,7 +2,6 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { UserService } from '../src/user/user.service';
 import { StudentService } from '../src/student/student.service';
 import { TeacherService } from '../src/teacher/teacher.service';
-import { AdminService } from '../src/admin/admin.service';
 import { HeadTeacherService } from '../src/head_teacher/head_teacher.service';
 import { CreateUserDto } from '../src/user/dto/create-user.dto';
 import { Role } from '@prisma/client';
@@ -15,7 +14,6 @@ async function main() {
   const userService = new UserService(prisma, jwt);
   const studentService = new StudentService(prisma);
   const teacherService = new TeacherService(prisma);
-  const adminService = new AdminService(prisma);
   const headTeacherService = new HeadTeacherService(prisma);
 
   const users: CreateUserDto[] = [
@@ -74,7 +72,6 @@ async function main() {
         break;
 
       case Role.ADMIN:
-        await adminService.create({ id: newUser.id_us });
         console.log(`🧑‍💼 Admin vinculado al usuario ${newUser.account}`);
         break;
     }

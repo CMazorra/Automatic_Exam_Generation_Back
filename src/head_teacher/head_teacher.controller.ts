@@ -17,6 +17,26 @@ export class HeadTeacherController {
     return this.headTeacherService.findAll();
   }
 
+   @Get('all')
+  findAllAll() {
+    return this.headTeacherService.findAllAll();
+  }
+
+  @Get('deleted')
+  findAllDeleted() {
+    return this.headTeacherService.findAllDeleted();
+  }
+
+  @Get('all/:id')
+  findOneAll(@Param('id') id: string) {
+    return this.headTeacherService.findOneAll(+id);
+  }
+
+  @Get('deleted/:id')
+  findOneDeleted(@Param('id') id: string) {
+    return this.headTeacherService.findOneDelete(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.headTeacherService.findOne(+id);

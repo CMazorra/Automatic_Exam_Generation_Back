@@ -37,10 +37,7 @@ export class TeacherController {
     return this.teacherService.findOneDeleted(+id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teacherService.findOne(+id);
-  }
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
@@ -50,5 +47,15 @@ export class TeacherController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.teacherService.remove(+id);
+  }
+
+  @Get("review-report")
+  getTeachersReviewReport() {
+    return this.teacherService.getTeachersReviewReport();
+  }
+  
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.teacherService.findOne(+id);
   }
 }

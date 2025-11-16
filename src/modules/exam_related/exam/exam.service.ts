@@ -5,6 +5,7 @@ import { UpdateExamDto } from './dto/update-exam.dto';
 import { GenerateExamDto } from './dto/generated-exam.dto';
 import { Question } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ExamService {
@@ -14,67 +15,105 @@ export class ExamService {
     return this.prisma.exam.create({ data });
   }
 
- async generated(data: GenerateExamDto) {
-    let selectedQuestions: Question[] = [];
-    
-    // 🔁 Recorremos cada tipo pedido
-    for (const dist of data.questionDistribution) {
-      const { type, amount } = dist;
-      
-      const available = await this.prisma.question.findMany({
-        where: {
-          subject_id: data.subject_id,
-          type: type,
-        },
-      });
-      console.log('Available questions of type', type);
-       console.log(available);
-      if (available.length === 0) {
-        throw new NotFoundException(
-          `No se encontraron preguntas del tipo "${type}" , "${available.length}"para la asignatura dada.`,
-        );
-      }
+async generated(data: GenerateExamDto) {
 
-      // Mezclamos aleatoriamente
-      const shuffled = available.sort(() => Math.random() - 0.5);
+  // Helper: generar combinaciones
+  function combinations<T>(arr: T[], k: number): T[][] {
+    if (k === 0) return [[]];
+    if (arr.length === 0) return [];
 
-      const chosen = shuffled.slice(0, amount);
+    const [first, ...rest] = arr;
 
-      if (chosen.length < amount) {
-        throw new NotFoundException(
-          `Solo hay ${chosen.length} preguntas disponibles del tipo "${type}" , "${chosen.length}" en esta asignatura.`,
-        );
-      }
+    const withFirst = combinations(rest, k - 1).map(c => [first, ...c]);
+    const withoutFirst = combinations(rest, k);
 
-      selectedQuestions = [...selectedQuestions, ...chosen];
-    }
+    return [...withFirst, ...withoutFirst];
+  }
 
-    // 🧩 Crear el examen
-    const exam = await this.prisma.exam.create({
-      data: {
-        name: data.name,
+  // Helper: producto cartesiano
+  function cartesian<T>(arrays: T[][][]): T[][] {
+    return arrays.reduce((acc, curr) =>
+      acc.flatMap(a => curr.map(c => [...a, ...c])), [[]]);
+  }
+
+  let typeCombos: Question[][][] = [];
+
+  // 1️⃣ Para cada tipo → obtener TODAS las combinaciones
+  for (const dist of data.questionDistribution) {
+    const { type, amount } = dist;
+
+    const available = await this.prisma.question.findMany({
+      where: {
         subject_id: data.subject_id,
-        teacher_id: data.teacher_id,
-        head_teacher_id: data.head_teacher_id,
-        parameters_id: data.parameters_id,
-        status: 'generated',
-        difficulty: 'mixed', 
-        exam_questions: {
-          create: selectedQuestions.map((q) => ({
-            question: { connect: { id: q.id } },
-          })),
-        },
-      },
-      include: {
-        exam_questions: { include: { question: true } },
+        type: type
       },
     });
 
-    return exam;
+    if (available.length < amount) {
+      throw new NotFoundException(
+        `No hay suficientes preguntas del tipo "${type}". (Hay ${available.length}, se necesitan ${amount})`
+      );
+    }
+
+    const combos = combinations(available, amount); // TODAS las combinaciones
+    typeCombos.push(combos);
   }
 
+  // 2️⃣ Generar TODAS las combinaciones completas de examen
+  const allPossibleExams = cartesian(typeCombos);
 
+  if (allPossibleExams.length === 0) {
+    throw new BadRequestException("No existen combinaciones posibles para generar un examen.");
+  }
 
+  // 3️⃣ Buscar la PRIMERA combinación que no exista en DB
+  for (const candidate of allPossibleExams) {
+
+    const candidateIds = candidate.map(q => q.id).sort();
+
+    // Buscar si YA existe un examen con EXACTAMENTE esa combinación de preguntas
+    const exists = await this.prisma.exam.findFirst({
+      where: {
+        exam_questions: {
+          every: { question_id: { in: candidateIds } }
+        },
+        AND: {
+          exam_questions: {
+            none: { question_id: { notIn: candidateIds } }
+          }
+        }
+      }
+    });
+
+    // 4️⃣ Si no existe → CREAR EL EXAMEN AQUÍ
+    if (!exists) {
+      return await this.prisma.exam.create({
+        data: {
+          name: data.name,
+          subject_id: data.subject_id,
+          teacher_id: data.teacher_id,
+          head_teacher_id: data.head_teacher_id,
+          parameters_id: data.parameters_id,
+          status: 'generated',
+          difficulty: 'mixed',
+          exam_questions: {
+            create: candidateIds.map(id => ({
+              question: { connect: { id } }
+            }))
+          }
+        },
+        include: {
+          exam_questions: { include: { question: true } }
+        }
+      });
+    }
+  }
+
+  // 5️⃣ Si todas las combinaciones ya existen → imposible generar uno nuevo
+  throw new BadRequestException(
+    "No es posible generar un examen nuevo. Todas las combinaciones posibles ya existen."
+  );
+}
 
 
 

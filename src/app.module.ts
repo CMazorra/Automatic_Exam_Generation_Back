@@ -11,7 +11,6 @@ import { ReevaluationModule } from './modules/exam_related/reevaluation/reevalua
 import { UserModule } from './user/user.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { StudentModule } from './student/student.module';
-import { AdminModule } from './admin/admin.module';
 import { HeadTeacherModule } from './head_teacher/head_teacher.module';
 import { TopicModule } from './topic/topic.module';
 import { SubTopicModule } from './sub-topic/sub-topic.module';
@@ -21,7 +20,7 @@ import { ParametersModule } from './parameters/parameters.module';
 
 @Module({
   imports: [ ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
-    PrismaModule, UserModule, TeacherModule, StudentModule, AdminModule, HeadTeacherModule,
+    PrismaModule, UserModule, TeacherModule, StudentModule, HeadTeacherModule,
      TopicModule,SubTopicModule,SubjectModule, QuestionModule, ParametersModule],
    controllers: [AppController],
   providers: [AppService],

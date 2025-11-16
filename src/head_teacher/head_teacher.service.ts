@@ -12,11 +12,27 @@ export class HeadTeacherService {
   }
 
   async findAll() {
-    return this.prisma.head_Teacher.findMany({include: {teacher: true}});
+  return this.prisma.head_Teacher.findMany({where: {teacher: {isHeadTeacher: true, user: {isActive: true}}}, include: {teacher: {include: {user: true}}}});
+  }
+
+  async findAllAll() {
+    return this.prisma.head_Teacher.findMany({include: {teacher: {include: {user: true}}}});
+  }
+
+  async findAllDeleted() {
+    return this.prisma.head_Teacher.findMany({where: {teacher: {OR: [{ isHeadTeacher: false },{ user: { isActive: false }}]}}, include: {teacher: {include: {user: true}}}});
   }
 
   async findOne(id: number) {
-    return this.prisma.head_Teacher.findUnique({where: {id}, include: {teacher: true}});
+    return this.prisma.head_Teacher.findFirst({where: {id, teacher: {isHeadTeacher: true, user: {isActive: true}}},  include: {teacher: {include: {user: true}}}});
+  }
+
+  async findOneAll(id: number) {
+    return this.prisma.head_Teacher.findUnique({where: {id},  include: {teacher: {include: {user: true}}}});
+  }
+
+  async findOneDelete(id: number) {
+    return this.prisma.head_Teacher.findFirst({where: {id,teacher: {OR: [{ isHeadTeacher: false },{ user: { isActive: false }}]} },  include: {teacher: {include: {user: true}}}});
   }
 
   async update(id: number, data: UpdateHeadTeacherDto) {
@@ -24,6 +40,6 @@ export class HeadTeacherService {
   }
 
   async remove(id: number) {
-    return this.prisma.head_Teacher.delete({where: {id}});
+    return this.prisma.teacher.update({where: {id}, data:{isHeadTeacher: false}});
   }
 }

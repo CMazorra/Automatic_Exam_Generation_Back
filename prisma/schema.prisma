@@ -6,38 +6,35 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User{
-  id_us Int @id @default(autoincrement())
-  name String
-  password String 
-  account String @unique
-  age Int
-  course String
-  role Role @default(STUDENT)
-  admins Admin[]
+
+model User {
+  id_us    Int       @id @default(autoincrement())
+  name     String
+  password String
+  account  String    @unique
+  age      Int
+  course   String
+  role     Role      @default(STUDENT)
+  isActive Boolean   @default(true)
   students Student[]
   teachers Teacher[]
 }
 
-model Admin {
-  id   Int  @id @default(autoincrement())
-  user User @relation(fields: [id], references: [id_us])
+model Student {
+  id            Int            @id @default(autoincrement())
+  answers       Answer[]
+  exam_students Exam_Student[]
+  subjects      Subject[]
+  user          User           @relation(fields: [id], references: [id_us])
 }
 
-model Student {
-  id  Int @id @default(autoincrement())
-  answers Answer[]
-  exam_students Exam_Student[]
-  subjects Subject[]
-  user User @relation(fields: [id], references: [id_us])
-}
-model Teacher{
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [id], references: [id_us])
-  isHeadTeacher Boolean @default(false)
-  specialty String
+model Teacher {
+  id            Int            @id @default(autoincrement())
+  user          User           @relation(fields: [id], references: [id_us])
+  isHeadTeacher Boolean        @default(false)
+  specialty     String
   head_teachers Head_Teacher[]
-  exams Exam[]
+  exams         Exam[]
   exam_students Exam_Student[]
   questions     Question[]
   reevaluations Reevaluation[]
@@ -45,41 +42,42 @@ model Teacher{
 }
 
 model Head_Teacher {
-  id Int @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   exams_approved Approved_Exam[]
-  exam Exam[]
-  teacher Teacher @relation(fields: [id], references: [id])
-  subject  Subject[]
+  exam           Exam[]
+  teacher        Teacher         @relation(fields: [id], references: [id])
+  subject        Subject[]
 }
 
 model Subject {
   id              Int          @id @default(autoincrement())
   name            String
   head_teacher_id Int
-  program       String
+  program         String
   exams           Exam[]
   questions       Question[]
   head_teacher    Head_Teacher @relation(fields: [head_teacher_id], references: [id])
-  students        Student[]    
-  teachers        Teacher[]   
-  topics          Topic[] 
+  students        Student[]
+  teachers        Teacher[]
+  topics          Topic[]
 }
-model Exam{
-  id Int @id @default(autoincrement())
-  name String
-  status String
-  difficulty String
-  subject_id Int
-  teacher_id Int
-  parameters_id Int
+
+model Exam {
+  id              Int             @id @default(autoincrement())
+  name            String
+  status          String
+  difficulty      String
+  subject_id      Int
+  teacher_id      Int
+  parameters_id   Int
   head_teacher_id Int
-  subject Subject @relation(fields: [subject_id], references: [id])
-  teacher Teacher @relation(fields: [teacher_id], references: [id])
-  parameters Parameters @relation(fields: [parameters_id], references: [id])
-  head_teacher Head_Teacher @relation(fields: [head_teacher_id], references:[id])
-  exam_students Exam_Student[]
-  Approved_Exams Approved_Exam[]
-  exam_questions Exam_Question[]
+  subject         Subject         @relation(fields: [subject_id], references: [id])
+  teacher         Teacher         @relation(fields: [teacher_id], references: [id])
+  parameters      Parameters      @relation(fields: [parameters_id], references: [id])
+  head_teacher    Head_Teacher    @relation(fields: [head_teacher_id], references: [id])
+  exam_students   Exam_Student[]
+  Approved_Exams  Approved_Exam[]
+  exam_questions  Exam_Question[]
 }
 
 model Parameters {
@@ -110,7 +108,7 @@ model Topic {
   id         Int         @id @default(autoincrement())
   name       String
   sub_topics Sub_Topic[]
-  subjects   Subject[] 
+  subjects   Subject[]
 }
 
 model Sub_Topic {
@@ -163,11 +161,12 @@ model Exam_Question {
 
   @@id([exam_id, question_id])
 }
-model Answer{
-  exam_id Int
-  question_id Int
-  student_id Int
-  answer_text String
+
+model Answer {
+  exam_id       Int
+  question_id   Int
+  student_id    Int
+  answer_text   String
   exam_question Exam_Question @relation(fields: [exam_id, question_id], references: [exam_id, question_id])
   student       Student       @relation(fields: [student_id], references: [id])
 
@@ -184,6 +183,7 @@ model Reevaluation {
 
   @@id([exam_id, student_id, teacher_id])
 }
+
 enum Role {
   ADMIN
   TEACHER

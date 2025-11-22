@@ -11,7 +11,7 @@ import 'dotenv/config';
 async function main() {
   const prisma = new PrismaService();
   const jwt = new JwtService({secret: 'clave_de_prueba'});
-  const userService = new UserService(prisma, jwt);
+  const userService = new UserService(prisma);
   const studentService = new StudentService(prisma);
   const teacherService = new TeacherService(prisma);
   const headTeacherService = new HeadTeacherService(prisma);

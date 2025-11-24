@@ -17,9 +17,10 @@ import { SubTopicModule } from './sub-topic/sub-topic.module';
 import { SubjectModule } from './subject/subject.module';
 import { QuestionModule } from './question/question.module';
 import { ParametersModule } from './parameters/parameters.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
+  imports: [ AuthModule, ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
     PrismaModule, UserModule, TeacherModule, StudentModule, HeadTeacherModule,
      TopicModule,SubTopicModule,SubjectModule, QuestionModule, ParametersModule],
    controllers: [AppController],

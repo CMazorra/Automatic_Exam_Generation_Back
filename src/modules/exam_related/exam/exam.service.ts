@@ -158,4 +158,41 @@ async generated(data: GenerateExamDto) {
       where: { id },
     });
   }
+  
+#Task1
+  async listGeneratedExamsBySubject(subjectId: number) {
+    return this.prisma.exam.findMany({
+      where: {
+        subject_id: subjectId,
+        status: 'generated',
+      },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        difficulty: true,
+        subject_id: true,
+        teacher: {
+          select: {
+            id: true,
+            specialty: true,
+            user: {
+              select: {
+                id_us: true,
+                name: true,
+              },
+            },
+          },
+        },
+        parameters: {
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
 }

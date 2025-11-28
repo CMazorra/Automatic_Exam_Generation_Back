@@ -3,6 +3,7 @@ import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { GenerateExamDto } from './dto/generated-exam.dto';
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('exam')
 export class ExamController {
@@ -17,15 +18,24 @@ export class ExamController {
     return this.examService.generated(generatedexamDto);
   }
 
+@Get('generated/subject/:subjectId')
+  async getGeneratedExamsBySubject(
+    @Param('subjectId', ParseIntPipe) subjectId: number,
+  ) {
+    return this.examService.listGeneratedExamsBySubject(subjectId);
+  }
+
+
+
   @Get()
   findAll() {
     return this.examService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.examService.findOne(+id);
+ @Get(':id')
+ findOne(@Param('id', ParseIntPipe) id: number) {
+  return this.examService.findOne(id);
   }
+
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateExamDto: UpdateExamDto) {

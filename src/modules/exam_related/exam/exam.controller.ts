@@ -9,10 +9,13 @@ import { ParseIntPipe } from '@nestjs/common';
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
-  @Post()
-   create(@Body() createExamDto: CreateExamDto) {
-    return this.examService.create(createExamDto);
-  } 
+@Post()
+create(@Body() body: any) {
+  // Separamos dto y preguntas
+  const { questions, ...dto } = body;
+
+  return this.examService.create(dto, questions);
+}
   @Post('generate')
   generated(@Body() generatedexamDto : GenerateExamDto) {
     return this.examService.generated(generatedexamDto);

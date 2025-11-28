@@ -10,11 +10,48 @@ import { BadRequestException } from '@nestjs/common';
 @Injectable()
 export class ExamService {
   constructor(private readonly prisma: PrismaService) {}
+//Task 4
+async create(
+  dto: CreateExamDto,
+  questions: number[] = [],
+) {
+  return this.prisma.$transaction(async (tx) => {
 
-  create(data: CreateExamDto) {
-    return this.prisma.exam.create({ data });
-  }
+    // 1. Crear examen
+    const exam = await tx.exam.create({
+      data: {
+        name: dto.name,
+        status: dto.status,
+        difficulty: dto.difficulty,
+        subject_id: dto.subject_id,
+        teacher_id: dto.teacher_id,
+        parameters_id: dto.parameters_id,
+        head_teacher_id: dto.head_teacher_id,
+      },
+    });
 
+    // 2. Crear exam_question
+    if (questions.length > 0) {
+      await tx.exam_Question.createMany({
+        data: questions.map((id) => ({
+          exam_id: exam.id,
+          question_id: id,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    // 3. Retornar examen completo
+    return tx.exam.findUnique({
+      where: { id: exam.id },
+      include: {
+        exam_questions: {
+          include: { question: true },
+        },
+      },
+    });
+  });
+}
 async generated(data: GenerateExamDto) {
 
   // Helper: generar combinaciones
@@ -158,7 +195,7 @@ async generated(data: GenerateExamDto) {
       where: { id },
     });
   }
-  
+
 #Task1
   async listGeneratedExamsBySubject(subjectId: number) {
     return this.prisma.exam.findMany({

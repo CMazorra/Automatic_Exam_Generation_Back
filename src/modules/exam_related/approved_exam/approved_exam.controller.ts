@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete ,ParseIntPipe} from '@nestjs/common';
 import { approved_examService } from './approved_exam.service';
 import { CreateApprovedExamDto } from './dto/create-approved_exam.dto';
 import { UpdateApprovedExamDto } from './dto/update-approved_exam.dto';
@@ -10,6 +10,13 @@ export class ApprovedExamController {
   @Post()
   create(@Body() createApprovedExamDto: CreateApprovedExamDto) {
     return this.approvedExamService.create(createApprovedExamDto);
+  }
+//http://localhost:3000/app/approved-exam/head-teacher/7
+  @Get('head-teacher/:id')
+  async listApprovedByHeadTeacher(
+    @Param('id', ParseIntPipe) headTeacherId: number,
+  ) {
+    return await this.approvedExamService.listApprovedByHeadTeacher(headTeacherId);
   }
 
  @Get(':date_id/:exam_id/:head_teacher_id')

@@ -18,6 +18,7 @@ export class ExamController {
     return this.examService.generated(generatedexamDto);
   }
 
+//http://localhost:3000/app/exam/generated/subject/1
 @Get('generated/subject/:subjectId')
   async getGeneratedExamsBySubject(
     @Param('subjectId', ParseIntPipe) subjectId: number,

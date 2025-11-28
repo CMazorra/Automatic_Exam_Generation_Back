@@ -61,4 +61,39 @@ export class approved_examService {
       },
     });
   }
+
+
+  //Task2
+async listApprovedByHeadTeacher(headTeacherId: number) {
+    return await this.prisma.approved_Exam.findMany({
+      where: { head_teacher_id: headTeacherId },
+      select: {
+        exam: {
+          select: {
+            id: true,
+            name: true,      
+            subject: {
+              select: { name: true }
+            },
+          },
+        },
+        date: {
+          select: {
+            id: true,
+            date: true,     
+          },
+        },
+        guidelines: true,
+      },
+    });
+  }
+
+
+
+
+
+
+
+
+
 }

@@ -41,4 +41,12 @@ export class ExamQuestionController {
   ) {
     return this.examQuestionService.remove(+exam_id, +question_id);
   }
+
+  //http://localhost:3000/app/exam-question/most-used
+@Get('most-used')
+  async mostUsedQuestions() {
+    return this.examQuestionService.listMostUsedQuestions();
+  }
+
+
 }

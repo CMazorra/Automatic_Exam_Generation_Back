@@ -23,9 +23,21 @@ export class TopicService {
     return topic;
   }
 
-  update(id: number, data: UpdateTopicDto) {
-    return this.prisma.topic.update({ where: { id }, data });
-  }
+update(id: number, data: UpdateTopicDto) {
+  return this.prisma.topic.update({
+    where: { id },
+    data: {
+      ...(data.subject_id && {
+        subjects: {
+          connect: { id: data.subject_id }
+        }
+      }),
+
+      // Además puedes editar lo del create
+      ...(data.name && { name: data.name }),
+    },
+  });
+}
 
   remove(id: number) {
     return this.prisma.topic.delete({ where: { id } });

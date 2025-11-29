@@ -61,6 +61,12 @@ export class TeacherController {
     return this.teacherService.remove(+id);
   }
 
+@Get(':id/subjects')
+getSubjects(@Param('id') id: string) {
+  return this.teacherService.getSubjectsByTeacher(Number(id));
+}
+
+
   @Get("review-report")
   getTeachersReviewReport() {
     return this.teacherService.getTeachersReviewReport();

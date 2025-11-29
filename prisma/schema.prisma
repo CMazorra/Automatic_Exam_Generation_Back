@@ -112,7 +112,7 @@ model Topic {
 }
 
 model Sub_Topic {
-  id        Int
+  id        Int   
   name      String
   topic_id  Int
   questions Question[]

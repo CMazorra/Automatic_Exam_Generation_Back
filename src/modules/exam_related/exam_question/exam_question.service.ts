@@ -57,4 +57,62 @@ export class ExamQuestionService {
       },
     });
   }
+  
+  //task3
+   async listMostUsedQuestions() {
+    // 1. Agrupar por cantidad de uso
+    const grouped = await this.prisma.exam_Question.groupBy({
+      by: ['question_id'],
+      _count: { question_id: true },
+      orderBy: {
+        _count: {
+          question_id: 'desc',
+        },
+      },
+    });
+
+    // 2. Obtener datos completos de cada pregunta
+    const questions = await Promise.all(
+      grouped.map(async (row) => {
+        const question = await this.prisma.question.findUnique({
+          where: { id: row.question_id },
+          select: {
+            id: true,
+            question_text: true,
+            difficulty: true,
+            subject: {
+              select: { name: true },
+            },
+            sub_topic: {
+              select: {
+                name: true,
+                topic: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        return {
+          usage_count: row._count.question_id,
+          ...question,
+        };
+      }),
+    );
+
+    return questions;
+  }
+
+
+
+
+
+
+
+
+
+
 }

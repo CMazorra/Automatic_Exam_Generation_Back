@@ -7,9 +7,25 @@ import { UpdateSubTopicDto } from './dto/update-sub-topic.dto';
 export class SubTopicService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateSubTopicDto) {
-    return this.prisma.sub_Topic.create({ data });
-  }
+async create(dto: CreateSubTopicDto) {
+  // Buscar último id del topic
+  const last = await this.prisma.sub_Topic.findFirst({
+    where: { topic_id: dto.topic_id },
+    orderBy: { id: 'desc' },
+  });
+
+  const nextId = last ? last.id + 1 : 1;
+
+  // Crear Sub_Topic
+  return this.prisma.sub_Topic.create({
+    data: {
+      id: nextId,              // calculado manualmente
+      name: dto.name,
+      topic_id: dto.topic_id,  // importante que no sea undefined
+    },
+  });
+}
+
 
   findAll() {
     return this.prisma.sub_Topic.findMany({ include: { topic: true } });

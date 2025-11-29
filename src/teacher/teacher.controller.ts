@@ -31,4 +31,11 @@ export class TeacherController {
   remove(@Param('id') id: string) {
     return this.teacherService.remove(+id);
   }
+
+@Get(':id/subjects')
+getSubjects(@Param('id') id: string) {
+  return this.teacherService.getSubjectsByTeacher(Number(id));
+}
+
+
 }

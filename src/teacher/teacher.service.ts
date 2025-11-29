@@ -26,4 +26,20 @@ export class TeacherService {
   async remove(id: number) {
     return this.prisma.teacher.delete({where: {id}});
   }
+  //Dado un profesor me devuelve sus asignaturas
+async getSubjectsByTeacher(teacherId: number) {
+  const teacher = await this.prisma.teacher.findUnique({
+    where: { id: teacherId },
+    include: { subjects: true },
+  });
+
+  return teacher?.subjects ?? [];
+}
+
+
+
+
+
+
+
 }

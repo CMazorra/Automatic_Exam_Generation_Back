@@ -111,12 +111,7 @@ async listApprovedByHeadTeacher(headTeacherId: number) {
             },
           },
         },
-        date: {
-          select: {
-            id: true,
-            date: true,     
-          },
-        },
+        date: true,
         guidelines: true,
       },
     });

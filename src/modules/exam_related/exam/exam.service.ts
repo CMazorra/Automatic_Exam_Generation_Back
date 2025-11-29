@@ -4,7 +4,6 @@ import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { GenerateExamDto } from './dto/generated-exam.dto';
 import { Question } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
@@ -231,6 +230,7 @@ async generated(data: GenerateExamDto) {
         id: 'desc',
       },
     });
+  }
   async getExamPerformance(examId: number){
     const examQuestions = await this.prisma.exam_Question.findMany({
       where: { exam_id: examId },

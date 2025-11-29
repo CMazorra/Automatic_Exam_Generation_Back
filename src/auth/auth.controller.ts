@@ -1,7 +1,8 @@
-import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
+import { Controller, Post,Get, Body, UseInterceptors, Req, UseGuards } from '@nestjs/common';
 import { AuthService} from './auth.service';
 import { CookieInterceptor } from './cookie.interceptor';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 
 @Controller('auth')
@@ -20,5 +21,11 @@ export class AuthController {
   @UseInterceptors(CookieInterceptor)
   async logout() {
     return this.authService.logout();
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Req() req) {
+    return req.user;  
   }
 }

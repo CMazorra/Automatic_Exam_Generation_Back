@@ -31,4 +31,10 @@ export class SubjectController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.subjectService.remove(id);
   }
+
+  @Get(':id/teachers')
+getTeachers(@Param('id') id: string) {
+  return this.subjectService.getTeachersBySubject(Number(id));
+}
+
 }

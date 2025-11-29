@@ -14,7 +14,6 @@ export class TopicService {
   findAll() {
     return this.prisma.topic.findMany({ include: { sub_topics: true } });
   }
-
   async findOne(id: number) {
     const topic = await this.prisma.topic.findUnique({
       where: { id },
@@ -24,11 +23,44 @@ export class TopicService {
     return topic;
   }
 
-  update(id: number, data: UpdateTopicDto) {
-    return this.prisma.topic.update({ where: { id }, data });
-  }
+update(id: number, data: UpdateTopicDto) {
+  return this.prisma.topic.update({
+    where: { id },
+    data: {
+      ...(data.subject_id && {
+        subjects: {
+          connect: { id: data.subject_id }
+        }
+      }),
+
+      // Además puedes editar lo del create
+      ...(data.name && { name: data.name }),
+    },
+  });
+}
 
   remove(id: number) {
     return this.prisma.topic.delete({ where: { id } });
   }
+
+async getTopicsBySubject(subjectId: number) {
+  return this.prisma.topic.findMany({
+    where: {
+      subjects: {
+        some: { id: subjectId }, // 👈 esto filtra los topics que tienen relación con esa asignatura
+      },
+    },
+    include: {
+      sub_topics: true, // 👈 opcional: incluye también los subtemas si quieres
+    },
+  });
+}
+
+
+
+
+
+
+
+
 }

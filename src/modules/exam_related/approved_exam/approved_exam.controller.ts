@@ -19,31 +19,36 @@ export class ApprovedExamController {
     return await this.approvedExamService.listApprovedByHeadTeacher(headTeacherId);
   }
 
- @Get(':date_id/:exam_id/:head_teacher_id')
+  @Get()
+  findAll() {
+    return this.approvedExamService.findAll();
+  }
+
+ @Get(':date/:exam_id/:head_teacher_id')
   findOne(
-    @Param('date_id') date_id: string,
+    @Param('date') date: string,
     @Param('exam_id') exam_id: string,
     @Param('head_teacher_id') head_teacher_id: string,
   ) {
-    return this.approvedExamService.findOne(+date_id, +exam_id, +head_teacher_id);
+    return this.approvedExamService.findOne(new Date(date), +exam_id, +head_teacher_id);
   }
 
-  @Patch(':date_id/:exam_id/:head_teacher_id')
+  @Patch(':date/:exam_id/:head_teacher_id')
   update(
-    @Param('date_id') date_id: string,
+    @Param('date') date: string,
     @Param('exam_id') exam_id: string,
     @Param('head_teacher_id') head_teacher_id: string,
     @Body() updateapproved_examDto: UpdateApprovedExamDto,
   ) {
-    return this.approvedExamService.update(+date_id, +exam_id, +head_teacher_id, updateapproved_examDto);
+    return this.approvedExamService.update(new Date(date), +exam_id, +head_teacher_id, updateapproved_examDto);
   }
 
-  @Delete(':date_id/:exam_id/:head_teacher_id')
+  @Delete(':date/:exam_id/:head_teacher_id')
   remove(
-    @Param('date_id') date_id: string,
+    @Param('date') date: string,
     @Param('exam_id') exam_id: string,
     @Param('head_teacher_id') head_teacher_id: string,
   ) {
-    return this.approvedExamService.remove(+date_id, +exam_id, +head_teacher_id);
+    return this.approvedExamService.remove(new Date(date), +exam_id, +head_teacher_id);
   }
 }

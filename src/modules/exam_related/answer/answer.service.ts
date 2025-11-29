@@ -7,9 +7,34 @@ import { UpdateAnswerDto } from './dto/update-answer.dto';
 export class AnswerService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: CreateAnswerDto) {
-    return this.prisma.answer.create({ data });
+  async create(data: CreateAnswerDto) {
+    const {exam_id, question_id, student_id, answer_text} = data;
+
+    const examStudent = await this.prisma.exam_Student.findUnique({
+      where: {exam_id_student_id : {exam_id, student_id}},
+    });
+    if(!examStudent) throw new Error('El estudiante no tiene asignado el examen');
+
+    const examQuestion = await  this.prisma.exam_Question.findUnique({
+      where: {exam_id_question_id : {exam_id, question_id}},
+    });
+    if(!examQuestion) throw new Error('La pregunta no pertenece al examen asignado');
+
+    return this.prisma.answer.create({
+      data: { exam_id, question_id, student_id, answer_text},
+    });
   }
+
+    async getAnswerByStudent(exam_id: number, student_id: number) {
+      return this.prisma.answer.findMany({
+        where: { exam_id, student_id},
+        include: {
+          exam_question: {
+            include: { question: true},
+          },
+        },
+      });
+    }
 
   findAll() {
     return this.prisma.answer.findMany({

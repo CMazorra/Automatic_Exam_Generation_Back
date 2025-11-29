@@ -1,16 +1,20 @@
-// src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { UserModule } from '../user/user.module';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { JwtStrategy } from './jwt.strategy';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
-    UserModule, // Para poder usar UserService
+    PrismaModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'miClaveSecreta', // Cambia esto en producción
-      signOptions: { expiresIn: '1h' }, // Token válido 1 hora
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
     }),
   ],
-  exports: [JwtModule], // Para poder usar JwtService en UserService
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

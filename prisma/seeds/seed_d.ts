@@ -160,19 +160,4 @@ export async function seed_subjects_questions() {
 
   console.log('✅ Preguntas creadas');
 
-  // === 6️⃣ CREAR FECHAS ===
-  const dates = [
-    new Date('2024-03-01'),
-    new Date('2024-04-10'),
-    new Date('2024-05-15'),
-    new Date('2024-06-20'),
-    new Date('2024-07-30'),
-  ];
-
-  await prisma.date.createMany({
-    data: dates.map((d) => ({ date: d })),
-  });
-
-  console.log('✅ Fechas creadas');
-  console.log('🎉 Seed completado correctamente.');
 }

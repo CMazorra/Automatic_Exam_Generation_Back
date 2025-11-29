@@ -50,6 +50,11 @@ create(@Body() body: any) {
   remove(@Param('id') id: string) {
     return this.examService.remove(+id);
   }
+
+  @Get(':id/performance')
+  getPerformance(@Param('id') id: string) {
+    return this.examService.getExamPerformance(+id);
+  }
 }
 
 

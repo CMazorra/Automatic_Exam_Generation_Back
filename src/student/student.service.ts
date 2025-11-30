@@ -42,4 +42,21 @@ export class StudentService {
   async remove(id: number) {
     return this.prisma.student.update({where: {id}, data:{ user:{ update:{isActive:false}}}});
   }
+
+
+  async getStudentSubjects(studentId: number) {
+  return this.prisma.student.findUnique({
+    where: { id: studentId },
+    select: {
+      id: true,
+      subjects: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+}
+
 }

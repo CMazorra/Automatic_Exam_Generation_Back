@@ -47,6 +47,27 @@ export class SubjectService {
   return subject.teachers;
 }
 
+async getSubjectStudents(subjectId: number) {
+  return this.prisma.subject.findUnique({
+    where: { id: subjectId },
+    select: {
+      id: true,
+      name: true,
+      students: {
+        select: {
+          id: true,
+          user: {
+            select: {
+              name: true,
+              account: true,
+              age: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
 
 
 

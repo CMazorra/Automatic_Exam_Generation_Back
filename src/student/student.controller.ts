@@ -70,4 +70,11 @@ export class StudentController {
   remove(@Param('id') id: string) {
     return this.studentService.remove(+id);
   }
+
+ //Dado una ID de estudiante, obtener las materias asociadas a ese estudiante
+  @Get(':id/subjects')
+async getStudentSubjects(@Param('id') id: string) {
+  return this.studentService.getStudentSubjects(Number(id));
+}
+
 }

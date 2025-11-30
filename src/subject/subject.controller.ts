@@ -32,9 +32,18 @@ export class SubjectController {
     return this.subjectService.remove(id);
   }
 
+
+
   @Get(':id/teachers')
 getTeachers(@Param('id') id: string) {
   return this.subjectService.getTeachersBySubject(Number(id));
 }
+
+//Dado una ID de asignatura, obtener los estudiantes asociados a esa asignatura
+@Get(':id/students')
+async getSubjectStudents(@Param('id') id: string) {
+  return this.subjectService.getSubjectStudents(Number(id));
+}
+
 
 }

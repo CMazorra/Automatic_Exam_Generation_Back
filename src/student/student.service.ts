@@ -118,6 +118,20 @@ export class StudentService {
   }
 
   return result;
+
+  async getStudentSubjects(studentId: number) {
+  return this.prisma.student.findUnique({
+    where: { id: studentId },
+    select: {
+      id: true,
+      subjects: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
 }
 
 }

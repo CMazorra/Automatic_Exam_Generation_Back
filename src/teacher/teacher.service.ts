@@ -46,6 +46,21 @@ export class TeacherService {
   async restore(id: number) {
     return this.prisma.teacher.update({where: {id}, data:{ user:{ update:{isActive:true}}}});
   }
+  //Dado un profesor me devuelve sus asignaturas
+async getSubjectsByTeacher(teacherId: number) {
+  const teacher = await this.prisma.teacher.findUnique({
+    where: { id: teacherId },
+    include: { subjects: true },
+  });
+
+  return teacher?.subjects ?? [];
+}
+
+
+
+
+
+
 
   async getTeachersReviewReport() {
     const now = new Date();

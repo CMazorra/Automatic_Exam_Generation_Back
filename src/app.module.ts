@@ -19,6 +19,7 @@ import { QuestionModule } from './question/question.module';
 import { ParametersModule } from './parameters/parameters.module';
 import { AuthModule } from './auth/auth.module';
 
+
 @Module({
   imports: [ AuthModule, ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
     PrismaModule, UserModule, TeacherModule, StudentModule, HeadTeacherModule,

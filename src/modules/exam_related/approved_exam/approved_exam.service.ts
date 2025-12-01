@@ -23,23 +23,8 @@ export class approved_examService {
 
     await this.prisma.exam.update({
       where: {id:exam_id},
-      data: {status : isRejected ? 'rejected' : 'approved'},
+      data: {status : isRejected ? 'Rechazado' : 'Aprobado'},
     });
-
-    if (isRejected)
-    {
-      await this.prisma.exam.create({
-        data: {
-          name: `${exam.name} (Corrections Required`,
-          status: 'pending',
-          difficulty: exam.difficulty,
-          subject_id: exam.subject_id,
-          teacher_id: exam.teacher_id,
-          parameters_id : exam.parameters_id,
-          head_teacher_id: exam.head_teacher_id,
-        },
-      });
-    }
 
     return this.prisma.approved_Exam.create({
       data: { exam_id, head_teacher_id, guidelines},
@@ -95,4 +80,34 @@ export class approved_examService {
       },
     });
   }
+
+
+  //Task2
+async listApprovedByHeadTeacher(headTeacherId: number) {
+    return await this.prisma.approved_Exam.findMany({
+      where: { head_teacher_id: headTeacherId },
+      select: {
+        exam: {
+          select: {
+            id: true,
+            name: true,      
+            subject: {
+              select: { name: true }
+            },
+          },
+        },
+        date: true,
+        guidelines: true,
+      },
+    });
+  }
+
+
+
+
+
+
+
+
+
 }

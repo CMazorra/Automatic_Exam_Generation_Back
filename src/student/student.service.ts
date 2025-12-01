@@ -43,6 +43,10 @@ export class StudentService {
     return this.prisma.student.update({where: {id}, data:{ user:{ update:{isActive:false}}}});
   }
 
+  async restore(id: number) {
+    return this.prisma.student.update({where: {id}, data:{ user:{ update:{isActive:true}}}});
+  }
+
   async getReevaluationComparisonReport() {
 
   const reevals = await this.prisma.reevaluation.findMany({

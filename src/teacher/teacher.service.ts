@@ -42,6 +42,11 @@ export class TeacherService {
   async remove(id: number) {
     return this.prisma.teacher.update({where: {id}, data:{ user:{ update:{isActive:false}}}});
   }
+
+  async restore(id: number) {
+    return this.prisma.teacher.update({where: {id}, data:{ user:{ update:{isActive:true}}}});
+  }
+
   async getTeachersReviewReport() {
     const now = new Date();
     const twoSemestersAgo = new Date();

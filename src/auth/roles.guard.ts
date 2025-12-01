@@ -27,13 +27,16 @@ export class RolesGuard implements CanActivate {
     // Validar roles normales
     if (requiredRoles && !requiredRoles.includes(user.role)) return false;
 
-    // Validar head teacher
     if (requireHeadTeacher) {
-      if (user.role === Role.TEACHER && user.headTeacher) {
-        return true;
+      if (user.role === Role.TEACHER) {
+        return user.headTeacher === true;
       }
-      return false; // denegamos si no es head teacher
-    }
+      if (user.role === Role.ADMIN) {
+        return true; // Admin pasa siempre
+      }
+      return false; // otros roles bloqueados
+}
+
 
     return true;
   }

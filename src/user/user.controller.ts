@@ -67,4 +67,10 @@ export class UserController {
     return this.userService.remove(+id);
   }
 
+  @Patch('restore/:id')
+  @Roles(Role.ADMIN)
+  restore(@Param('id') id: string) {
+    return this.userService.restore(+id);
+  }
+
 }

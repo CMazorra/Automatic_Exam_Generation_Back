@@ -67,4 +67,10 @@ export class HeadTeacherController {
   remove(@Param('id') id: string) {
     return this.headTeacherService.remove(+id);
   }
+
+  @Patch('restore/:id')
+  @Roles(Role.ADMIN)
+  restore(@Param('id') id: string) {
+    return this.headTeacherService.restore(+id);
+  }
 }

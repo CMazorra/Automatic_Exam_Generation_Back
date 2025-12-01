@@ -65,15 +65,13 @@ export class StudentController {
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN, Role.TEACHER)
-  @RequireHeadTeacher()
+  @Roles(Role.ADMIN)
   remove(@Param('id') id: string) {
     return this.studentService.remove(+id);
   }
 
   @Patch('restore/:id')
-  @Roles(Role.ADMIN, Role.TEACHER)
-  @RequireHeadTeacher()
+  @Roles(Role.ADMIN)
   restore(@Param('id') id: string) {
     return this.studentService.restore(+id);
   }

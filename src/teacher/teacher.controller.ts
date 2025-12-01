@@ -66,10 +66,11 @@ export class TeacherController {
   restore(@Param('id') id: string) {
     return this.teacherService.restore(+id);
   }
-@Get(':id/subjects')
-getSubjects(@Param('id') id: string) {
-  return this.teacherService.getSubjectsByTeacher(Number(id));
-}
+  
+  @Get(':id/subjects')
+  getSubjects(@Param('id') id: string) {
+    return this.teacherService.getSubjectsByTeacher(Number(id));
+  }
 
 
   @Get("review-report")

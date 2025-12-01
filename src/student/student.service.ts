@@ -118,6 +118,7 @@ export class StudentService {
   }
 
   return result;
+}
 
   async getStudentSubjects(studentId: number) {
   return this.prisma.student.findUnique({

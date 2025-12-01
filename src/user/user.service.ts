@@ -53,4 +53,8 @@ export class UserService {
     return this.prisma.user.update({where: {id_us:id}, data: {isActive: false}});
   }
 
+  async restore(id: number) {
+    return this.prisma.user.update({where: {id_us:id}, data: {isActive: true}});
+  }
+
 }

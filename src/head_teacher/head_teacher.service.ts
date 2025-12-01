@@ -42,4 +42,8 @@ export class HeadTeacherService {
   async remove(id: number) {
     return this.prisma.teacher.update({where: {id}, data:{isHeadTeacher: false}});
   }
+
+  async restore(id: number) {
+    return this.prisma.teacher.update({where: {id}, data:{isHeadTeacher: true}});
+  }
 }

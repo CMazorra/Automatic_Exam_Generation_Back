@@ -61,6 +61,11 @@ export class TeacherController {
     return this.teacherService.remove(+id);
   }
 
+  @Patch('restore/:id')
+  @Roles(Role.ADMIN)
+  restore(@Param('id') id: string) {
+    return this.teacherService.restore(+id);
+  }
 @Get(':id/subjects')
 getSubjects(@Param('id') id: string) {
   return this.teacherService.getSubjectsByTeacher(Number(id));

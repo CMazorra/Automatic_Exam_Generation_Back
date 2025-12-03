@@ -26,20 +26,20 @@ export class approved_examService {
       data: {status : isRejected ? 'rejected' : 'approved'},
     });
 
-    if (isRejected)
-    {
-      await this.prisma.exam.create({
-        data: {
-          name: `${exam.name} (Corrections Required`,
-          status: 'pending',
-          difficulty: exam.difficulty,
-          subject_id: exam.subject_id,
-          teacher_id: exam.teacher_id,
-          parameters_id : exam.parameters_id,
-          head_teacher_id: exam.head_teacher_id,
-        },
-      });
-    }
+    // if (isRejected)
+    // {
+    //   await this.prisma.exam.create({
+    //     data: {
+    //       name: `${exam.name} (Corrections Required`,
+    //       status: 'pending',
+    //       difficulty: exam.difficulty,
+    //       subject_id: exam.subject_id,
+    //       teacher_id: exam.teacher_id,
+    //       parameters_id : exam.parameters_id,
+    //       head_teacher_id: exam.head_teacher_id,
+    //     },
+    //   });
+    // }
 
     return this.prisma.approved_Exam.create({
       data: { exam_id, head_teacher_id, guidelines},

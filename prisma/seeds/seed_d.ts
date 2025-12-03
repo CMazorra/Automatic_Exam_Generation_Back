@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { Subject } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function seed_subjects_questions() {
-  console.log('🌱 Cargando datos de materias, temas y preguntas...');
+  console.log('🌱 Cargando datos de materias, subtemas y preguntas...');
 
-  // === 1️⃣ CREAR TOPICS ===
-  const topics = await prisma.topic.createMany({
+  // Crear Topics
+  await prisma.topic.createMany({
     data: [
       { name: 'Matemáticas' },
       { name: 'Física' },
@@ -16,148 +17,151 @@ export async function seed_subjects_questions() {
     ],
   });
 
-  console.log('✅ Temas creados');
+  const topics = await prisma.topic.findMany();
 
-  // === 2️⃣ CREAR SUB-TOPICS ===
-  const allTopics = await prisma.topic.findMany();
-  for (const topic of allTopics) {
+  // Crear SubTopics
+  for (const topic of topics) {
     await prisma.sub_Topic.createMany({
       data: [
-        { id: 1, name: `${topic.name} - Introducción`, topic_id: topic.id },
-        { id: 2, name: `${topic.name} - Nivel Medio`, topic_id: topic.id },
-        { id: 3, name: `${topic.name} - Avanzado`, topic_id: topic.id },
+        { name: `${topic.name} Intro`, topic_id: topic.id },
+        { name: `${topic.name} Medio`, topic_id: topic.id },
+        { name: `${topic.name} Avanzado`, topic_id: topic.id },
       ],
     });
   }
 
-  console.log('✅ Subtemas creados');
+  const subTopics = await prisma.sub_Topic.findMany();
 
-  // === 3️⃣ CREAR SUBJECTS ===
+  // Obtener docentes y coordinadores
   const headTeachers = await prisma.head_Teacher.findMany();
   const teachers = await prisma.teacher.findMany();
 
-  const subjects = [
-    {
-      name: 'Álgebra Lineal',
-      program: 'Ingeniería',
-      head_teacher_id: headTeachers[0].id,
-    },
-    {
-      name: 'Física Cuántica',
-      program: 'Ciencias',
-      head_teacher_id: headTeachers[1 % headTeachers.length].id,
-    },
-    {
-      name: 'Química Orgánica',
-      program: 'Ciencias',
-      head_teacher_id: headTeachers[2 % headTeachers.length].id,
-    },
-    {
-      name: 'Historia Mundial',
-      program: 'Humanidades',
-      head_teacher_id: headTeachers[0].id,
-    },
-    {
-      name: 'Biología Celular',
-      program: 'Ciencias',
-      head_teacher_id: headTeachers[1 % headTeachers.length].id,
-    },
+  // Crear Subjects
+  const subjectNames = [
+    'Álgebra Lineal',
+    'Física Cuántica',
+    'Química Orgánica',
+    'Historia Mundial',
+    'Biología Celular',
   ];
 
-  for (const s of subjects) {
-    await prisma.subject.create({
+  const createdSubjects: Subject[] = [];
+
+  for (let i = 0; i < subjectNames.length; i++) {
+    const s = await prisma.subject.create({
       data: {
-        name: s.name,
-        program: s.program,
-        head_teacher_id: s.head_teacher_id,
+        name: subjectNames[i],
+        program: 'Ingeniería',
+        head_teacher_id: headTeachers[i % headTeachers.length].id,
         teachers: {
-          connect: [
-            { id: teachers[Math.floor(Math.random() * teachers.length)].id },
-          ],
+          connect: [{ id: teachers[i % teachers.length].id }],
         },
       },
     });
+    createdSubjects.push(s);
   }
 
   console.log('✅ Materias creadas');
 
-  // === 4️⃣ CREAR PARAMETERS ===
+  // Parámetros
   await prisma.parameters.createMany({
     data: [
-      {
-        proportion: '50% teoría - 50% práctica',
-        amount_quest: '10',
-        quest_topics: 'Subtemas variados',
-      },
-      {
-        proportion: '70% práctica - 30% teoría',
-        amount_quest: '8',
-        quest_topics: 'Problemas de aplicación',
-      },
-      {
-        proportion: '100% teórico',
-        amount_quest: '5',
-        quest_topics: 'Conceptos básicos',
-      },
+      { proportion: '50% teoría - 50% práctica', amount_quest: '10', quest_topics: 'Mixto' },
+      { proportion: '70% práctica - 30% teoría', amount_quest: '8', quest_topics: 'Problemas' },
+      { proportion: '100% teórico', amount_quest: '5', quest_topics: 'Conceptos' },
     ],
   });
 
   console.log('✅ Parámetros creados');
 
-  // === 5️⃣ CREAR QUESTIONS ===
-  const subs = await prisma.sub_Topic.findMany();
-  const subjectsDB = await prisma.subject.findMany();
-  const teachersDB = await prisma.teacher.findMany();
+  // === CREAR VARIAS PREGUNTAS POR ASIGNATURA ===
+  const questionBank = {
+    'Álgebra Lineal': [
+      { text: '¿Qué es un vector?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: '¿Qué representa un determinante?', diff: 'Medio', type: 'Selección Múltiple', ans: 'C' },
+      { text: 'Demuestra que un subespacio...', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es una matriz identidad?', diff: 'Fácil', type: 'VoF', ans: 'VF' },
+      { text: '¿Condición para invertir una matriz?', diff: 'Medio', type: 'Selección Múltiple', ans: 'B' },
+      { text: '¿Base canónica de R2?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: '¿Cuál es el rango de una matriz?', diff: 'Medio', type: 'VoF', ans: 'VVF' },
+      { text: 'Explica independencia lineal', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un eigenvalor?', diff: 'Medio', type: 'Selección Múltiple', ans: 'C' },
+      { text: '¿Para qué sirve la diagonalización?', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+    ],
 
-  const questionSamples = [
-    {
-      question_text: '¿Cuál es la ecuación de una recta?',
-      difficulty: 'Fácil',
-      answer: 'y = mx + b',
-      type: 'Teórico',
-    },
-    {
-      question_text: '¿Qué es la constante de Planck?',
-      difficulty: 'Medio',
-      answer: '6.626×10⁻³⁴ J·s',
-      type: 'Teórico',
-    },
-    {
-      question_text: '¿Qué caracteriza a un enlace covalente?',
-      difficulty: 'Fácil',
-      answer: 'Compartición de electrones',
-      type: 'Teórico',
-    },
-    {
-      question_text: '¿En qué año comenzó la Segunda Guerra Mundial?',
-      difficulty: 'Fácil',
-      answer: '1939',
-      type: 'Memoria',
-    },
-    {
-      question_text: '¿Qué orgánulo celular contiene el ADN?',
-      difficulty: 'Fácil',
-      answer: 'El núcleo',
-      type: 'Teórico',
-    },
-  ];
+    'Física Cuántica': [
+      { text: 'Define función de onda', diff: 'Medio', type: 'Argumentación', ans: 'Texto' },
+      { text: 'Principio de incertidumbre', diff: 'Difícil', type: 'Selección Múltiple', ans: 'B' },
+      { text: '¿Qué es un fotón?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'VoF sobre dualidad onda-partícula', diff: 'Medio', type: 'VoF', ans: 'VFV' },
+      { text: 'Propiedades del espín', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un orbital?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'C' },
+      { text: 'VoF sobre niveles de energía', diff: 'Fácil', type: 'VoF', ans: 'VF' },
+      { text: 'Modelo de Bohr', diff: 'Medio', type: 'Selección Múltiple', ans: 'B' },
+      { text: '¿Qué es un fermión?', diff: 'Medio', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'Ecuación de Schrödinger', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+    ],
 
-  for (let i = 0; i < questionSamples.length; i++) {
-    const sample = questionSamples[i];
-    await prisma.question.create({
-      data: {
-        question_text: sample.question_text,
-        difficulty: sample.difficulty,
-        answer: sample.answer,
-        type: sample.type,
-        subject_id: subjectsDB[i % subjectsDB.length].id,
-        sub_topic_id: subs[i % subs.length].id,
-        topic_id: subs[i % subs.length].topic_id,
-        teacher_id: teachersDB[i % teachersDB.length].id,
-      },
-    });
+    'Química Orgánica': [
+      { text: 'Define isomería estructural', diff: 'Medio', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un radical libre?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'Condición para reacción SN1', diff: 'Difícil', type: 'Selección Múltiple', ans: 'C' },
+      { text: 'VoF sobre enlaces covalentes', diff: 'Fácil', type: 'VoF', ans: 'VF' },
+      { text: '¿Qué es un alqueno?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'B' },
+      { text: 'Explica la reacción de oxidación', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un grupo funcional?', diff: 'Medio', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'VoF sobre aromáticos', diff: 'Medio', type: 'VoF', ans: 'VFV' },
+      { text: 'Mecanismo de halogenación', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un alcohol primario?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'C' },
+     ],
+
+     'Historia Mundial': [
+      { text: 'Causas de la Primera Guerra Mundial', diff: 'Medio', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Quién fue Napoleón Bonaparte?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'Consecuencias de la Segunda Guerra Mundial', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: 'VoF sobre la Guerra Fría', diff: 'Medio', type: 'VoF', ans: 'VVF' },
+      { text: '¿En qué año cayó el Muro de Berlín?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'C' },
+      { text: 'Explica la revolución industrial', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué fue la Edad Media?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'B' },
+      { text: 'VoF sobre el Renacimiento', diff: 'Medio', type: 'VoF', ans: 'FVV' },
+      { text: 'Causas del imperialismo europeo', diff: 'Medio', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'Describe las revoluciones de 1848', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+     ],
+
+     'Biología Celular': [
+      { text: '¿Qué es una célula eucariota?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'Explica la mitocondria', diff: 'Medio', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es la mitosis?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'B' },
+      { text: 'VoF sobre ADN y ARN', diff: 'Fácil', type: 'VoF', ans: 'VFV' },
+      { text: 'Describe la membrana celular', diff: 'Medio', type: 'Argumentación', ans: 'Texto' },
+      { text: 'Rol del retículo endoplásmico', diff: 'Medio', type: 'Selección Múltiple', ans: 'C' },
+      { text: '¿Qué es la apoptosis?', diff: 'Difícil', type: 'Selección Múltiple', ans: 'A' },
+      { text: 'VoF sobre ribosomas', diff: 'Fácil', type: 'VoF', ans: 'VF' },
+      { text: 'Ciclo celular fases', diff: 'Difícil', type: 'Argumentación', ans: 'Texto' },
+      { text: '¿Qué es un lisosoma?', diff: 'Fácil', type: 'Selección Múltiple', ans: 'B' },
+     ],
+  };
+
+  for (const subj of createdSubjects) {
+    const bank = questionBank[subj.name] ?? [];
+
+    for (let i = 0; i < bank.length; i++) {
+      const sub = subTopics[i % subTopics.length];
+
+      await prisma.question.create({
+        data: {
+          question_text: bank[i].text,
+          difficulty: bank[i].diff,
+          answer: bank[i].ans,
+          type: bank[i].type,
+          subject_id: subj.id,
+          topic_id: sub.topic_id,
+          sub_topic_id: sub.id,
+          teacher_id: teachers[0].id,
+        },
+      });
+    }
   }
 
-  console.log('✅ Preguntas creadas');
-
+  console.log('✅ Preguntas creadas por asignatura');
 }

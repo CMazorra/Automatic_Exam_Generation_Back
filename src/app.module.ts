@@ -18,12 +18,13 @@ import { SubjectModule } from './subject/subject.module';
 import { QuestionModule } from './question/question.module';
 import { ParametersModule } from './parameters/parameters.module';
 import { AuthModule } from './auth/auth.module';
+import { ReportsModule } from './reports/reports.module';
 
 
 @Module({
   imports: [ AuthModule, ExamModule, ExamStudentModule, ApprovedExamModule, ExamQuestionModule, AnswerModule, ReevaluationModule,
     PrismaModule, UserModule, TeacherModule, StudentModule, HeadTeacherModule,
-     TopicModule,SubTopicModule,SubjectModule, QuestionModule, ParametersModule],
+     TopicModule,SubTopicModule,SubjectModule, QuestionModule, ParametersModule, ReportsModule],
    controllers: [AppController],
   providers: [AppService],
 })

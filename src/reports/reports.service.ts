@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { WorstQuestionReportDto } from "./dto/create-report.dto";
 import { CorrelationReportDto } from "./dto/difficulty-correlation.dto";
 import { difficultyToNumber, correlation } from "src/statistics/helpers";
+import { average } from "simple-statistics";
 
 @Injectable()
 export class ReportsService {
@@ -27,30 +28,21 @@ export class ReportsService {
       const answers = q.exam_questions.flatMap(eq => eq.answers);
 
       const total = answers.length;
-
-      const wrong = answers.filter(
-        a =>
-          a.answer_text.trim().toLowerCase() !==
-          q.answer.trim().toLowerCase()
-      ).length;
-
-      const failRate = total === 0 ? 0 : wrong / total;
+      const avgScore = total === 0 ? 0 : answers.reduce((sum,a) => sum + a.score, 0)/total;
 
       return {
         questionId: q.id,
         questionText: q.question_text,
         difficulty: q.difficulty,
-        subject: q.subject.name,
+        subject:q.subject.name,
         teacher: q.teacher.user.name,
         totalAnswers: total,
-        wrongAnswers: wrong,
-        failRate,
+        averageScore: avgScore,
+        answers,
       };
-    });
-
-    return stats
-      .sort((a, b) => b.failRate - a.failRate)
-      .slice(0, 10);
+  })
+   .filter(q => q.totalAnswers > 0);
+  return stats.sort((a,b) => a.averageScore - b.averageScore).slice(0,10);
   }
    async getDifficultyCorrelation(): Promise<CorrelationReportDto[]> {
     const subjects = await this.prisma.subject.findMany({

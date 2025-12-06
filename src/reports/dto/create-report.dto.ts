@@ -19,9 +19,11 @@ export class WorstQuestionReportDto {
   @ApiProperty()
   totalAnswers: number;
 
-  @ApiProperty()
-  wrongAnswers: number;
+  // @ApiProperty()
+  // wrongAnswers: number;
 
-  @ApiProperty()
-  failRate: number;
+  // @ApiProperty()
+  // failRate: number;
+   @ApiProperty()
+   averageScore: number
 }

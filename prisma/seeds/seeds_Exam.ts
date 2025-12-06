@@ -103,7 +103,7 @@ export async function seed_exams(prisma: PrismaClient) {
     }
 
     if (q.type === "VoF") {
-      const wrong = q.answer === "VF" ? "VV" : "FV";
+      const wrong = q.answer === "V" ? "F" : "V";
       return wrong;
     }
 

@@ -170,7 +170,7 @@ model Reevaluation {
   exam_id      Int
   student_id   Int
   teacher_id   Int
-  score        Float
+  score        Float?
   exam_student Exam_Student @relation(fields: [exam_id, student_id], references: [exam_id, student_id])
   teacher      Teacher      @relation(fields: [teacher_id], references: [id])
 

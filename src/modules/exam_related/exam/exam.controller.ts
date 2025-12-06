@@ -21,25 +21,21 @@ create(@Body() body: any) {
     return this.examService.generated(generatedexamDto);
   }
 
-//http://localhost:3000/app/exam/generated/subject/1
-@Get('generated/subject/:subjectId')
+  @Get('generated/subject/:subjectId')
   async getGeneratedExamsBySubject(
     @Param('subjectId', ParseIntPipe) subjectId: number,
   ) {
     return this.examService.listGeneratedExamsBySubject(subjectId);
   }
 
-
-
   @Get()
   findAll() {
     return this.examService.findAll();
   }
- @Get(':id')
- findOne(@Param('id', ParseIntPipe) id: number) {
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
   return this.examService.findOne(id);
   }
-
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateExamDto: UpdateExamDto) {

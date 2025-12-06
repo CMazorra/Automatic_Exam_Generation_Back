@@ -8,7 +8,7 @@ export class AnswerService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateAnswerDto) {
-    const {exam_id, question_id, student_id, answer_text, score} = data;
+    const {exam_id, question_id, student_id, answer_text} = data;
 
     const examStudent = await this.prisma.exam_Student.findUnique({
       where: {exam_id_student_id : {exam_id, student_id}},

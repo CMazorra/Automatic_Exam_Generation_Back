@@ -8,7 +8,17 @@ export class ExamStudentService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(data: CreateExamStudentDto) {
-    return this.prisma.exam_Student.create({ data });
+    return this.prisma.$transaction( async(tx) => {
+      const exam = await tx.exam.findUnique({
+        where: { id : data.exam_id}
+      });
+      if(!exam) throw new Error('Exam not found');
+      await tx.exam.update({
+        where: { id: exam.id},
+        data: {status: "Asignado"}
+      });
+      return tx.exam_Student.create({data});
+    });
   }
 
   findAll() {

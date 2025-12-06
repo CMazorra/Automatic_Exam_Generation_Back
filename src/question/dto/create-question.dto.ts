@@ -1,4 +1,5 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateQuestionDto {
   @IsString()
@@ -12,6 +13,10 @@ export class CreateQuestionDto {
 
   @IsString()
   type: string;
+
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  score: number;
 
   @IsInt()
   subject_id: number;

@@ -21,6 +21,11 @@ export class TopicController {
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.topicService.findOne(id);
   }
+  
+  @Get('subject/:id')
+getTopicsBySubject(@Param('id') id: string) {
+  return this.topicService.getTopicsBySubject(+id);
+}
 
   @Put(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateTopicDto) {

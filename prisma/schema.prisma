@@ -112,7 +112,7 @@ model Topic {
 }
 
 model Sub_Topic {
-  id        Int
+  id        Int   @default(autoincrement())
   name      String
   topic_id  Int
   questions Question[]
@@ -162,7 +162,7 @@ model Answer {
   answer_text   String
   exam_question Exam_Question @relation(fields: [exam_id, question_id], references: [exam_id, question_id])
   student       Student       @relation(fields: [student_id], references: [id])
-
+  score         Float
   @@id([exam_id, question_id, student_id])
 }
 

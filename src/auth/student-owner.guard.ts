@@ -8,16 +8,23 @@ export class StudentOwnerGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user; // contiene id_us, role, etc.
-    const studentId = Number(request.params.id);
+    const idParam = request.params?.id
 
     console.log('===== StudentOwnerGuard =====');
     console.log('Usuario logueado:', user);
-    console.log('ID estudiante solicitado:', studentId);
+    console.log('ID estudiante solicitado:', idParam);
 
     if (user.role === 'ADMIN' || user.role === 'TEACHER') {
       console.log('Permiso concedido: Admin o Teacher');
       return true;
     }
+
+    if (!idParam) {
+      console.log('Ruta sin param :id → StudentOwnerGuard no aplica');
+      return true;
+    }
+
+    const studentId = Number(idParam);
 
     if (user.role === 'STUDENT') {
       const student = await this.prisma.student.findUnique({

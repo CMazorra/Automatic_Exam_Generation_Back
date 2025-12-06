@@ -38,12 +38,7 @@ export class StudentController {
     return this.studentService.findAllDeleted();
   }
 
-  @Get(':id')
-  @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
-  @RequireStudentOwner()
-  findOne(@Param('id') id: string) {
-    return this.studentService.findOne(+id);
-  }
+  
 
   @Get('all/:id')
   @Roles(Role.ADMIN, Role.TEACHER)
@@ -58,8 +53,7 @@ export class StudentController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN, Role.TEACHER)
-  @RequireHeadTeacher()
+  @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
     return this.studentService.update(+id, updateStudentDto);
   }
@@ -75,10 +69,20 @@ export class StudentController {
   restore(@Param('id') id: string) {
     return this.studentService.restore(+id);
   }
+  
+
  //Dado una ID de estudiante, obtener las materias asociadas a ese estudiante
   @Get(':id/subjects')
-async getStudentSubjects(@Param('id') id: string) {
-  return this.studentService.getStudentSubjects(Number(id));
-}
+  @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
+  @RequireStudentOwner()
+  async getStudentSubjects(@Param('id') id: string) {
+     return this.studentService.getStudentSubjects(Number(id));
+  }
 
+ @Get(':id')
+  @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
+  @RequireStudentOwner()
+  findOne(@Param('id') id: string) {
+    return this.studentService.findOne(+id);
+  }
 }

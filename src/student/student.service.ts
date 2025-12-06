@@ -24,7 +24,7 @@ export class StudentService {
   }
 
   async findOne(id: number) {
-    return this.prisma.student.findUnique({where: {id, user:{isActive:true}}, include: {user: true}});
+    return this.prisma.student.findFirst({where: {id, user:{isActive:true}}, include: {user: true}});
   }
 
   async findOneAll(id: number) {
@@ -32,7 +32,7 @@ export class StudentService {
   }
 
   async findOneDeleted(id: number) {
-    return this.prisma.student.findUnique({where: {id, user:{isActive:false}}, include: {user: true}});
+    return this.prisma.student.findFirst({where: {id, user:{isActive:false}}, include: {user: true}});
   }
 
   async update(id: number, data: UpdateStudentDto) {
@@ -48,82 +48,32 @@ export class StudentService {
   }
 
   async getReevaluationComparisonReport() {
+    const now = new Date();
+    const twoSemestersAgo = new Date();
+    twoSemestersAgo.setMonth(now.getMonth() - 12);
 
-  const reevals = await this.prisma.reevaluation.findMany({
-    where: {
-      score: {
-        not: null
+    const reviews = await this.prisma.exam_Student.findMany({where: {exam: {Approved_Exams: {some: {date: {gte: twoSemestersAgo, }}}}},include: {exam: {include: {subject: true,}},teacher: {include: {user: true,}}}});
+
+    if (!reviews.length) {
+      return { message: "No hay profesores que hayan calificado exámenes en los últimos dos semestres." };
+    }
+
+    const result = {};
+
+    for (const r of reviews) {
+      const teacherName = r.teacher.user.name;
+      const subjectName = r.exam.subject.name;
+      if (!result[teacherName]) {
+        result[teacherName] = {};
       }
-    },
-    include: {
-      exam_student: {
-        include: {
-          exam: { include: { subject: true }},
-          student: { include: { user: true }}
-        }
-      },
-      teacher: { include: { user: true }}
-    }
-  });
-
-  if (!reevals.length) return {};
-
-  const subjectAvgCache: Record<number, number | null> = {};
-  const result = {};   // 👈 YA NO ES UN ARRAY
-
-  for (const r of reevals) {
-    const examStudent = r.exam_student;
-    if (!examStudent) continue;
-
-    const exam = examStudent.exam;
-    const subject = exam?.subject;
-    const student = examStudent.student;
-
-    const originalScore = examStudent.score;
-    const recalifiedScore = r.score!;
-    const subjectId = subject?.id ?? null;
-    const subjectName = subject?.name ?? "Sin asignatura";
-    const studentName = student.user?.name ?? "Sin nombre";
-
-    // ----------- PROMEDIO POR ASIGNATURA -----------
-    let subjectAverage: number | null = null;
-
-    if (subjectId !== null) {
-      if (subjectAvgCache[subjectId] !== undefined) {
-        subjectAverage = subjectAvgCache[subjectId];
-      } else {
-        const agg = await this.prisma.exam_Student.aggregate({
-          where: {
-            exam: { subject_id: subjectId }
-          },
-          _avg: { score: true }
-        });
-        subjectAverage = agg._avg?.score ?? null;
-        subjectAvgCache[subjectId] = subjectAverage;
+      if (!result[teacherName][subjectName]) {
+        result[teacherName][subjectName] = 0;
       }
+      result[teacherName][subjectName] += 1;
     }
 
-    // ---------- ARMAR OBJETO RESULTADO ----------
-    if (!result[studentName]) {
-      result[studentName] = {};
-    }
-
-    if (!result[studentName][subjectName]) {
-      result[studentName][subjectName] = [];
-    }
-
-    result[studentName][subjectName].push({
-      examId: exam.id,
-      originalScore,
-      recalifiedScore,
-      subjectAverage,
-      diffBefore: subjectAverage !== null ? Number((originalScore - subjectAverage).toFixed(3)) : null,
-      diffAfter: subjectAverage !== null ? Number((recalifiedScore - subjectAverage).toFixed(3)) : null,
-    });
+  
   }
-
-  return result;
-}
 
   async getStudentSubjects(studentId: number) {
   return this.prisma.student.findUnique({

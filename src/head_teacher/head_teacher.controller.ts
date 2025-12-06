@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RequireHeadTeacher } from '../auth/require-head-teacher.decorator';
+import { RequireTeacherOwner } from 'src/auth/require-teacher-owner.decorator';
 import { Role } from '@prisma/client';
 
 
@@ -21,7 +22,7 @@ export class HeadTeacherController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.TEACHER)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.headTeacherService.findAll();
   }
@@ -52,6 +53,7 @@ export class HeadTeacherController {
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.TEACHER)
+  @RequireTeacherOwner()
   findOne(@Param('id') id: string) {
     return this.headTeacherService.findOne(+id);
   }

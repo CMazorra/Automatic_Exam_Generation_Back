@@ -94,6 +94,7 @@ model Question {
   difficulty     String
   answer         String
   type           String
+  score          Float
   subject_id     Int
   sub_topic_id   Int
   topic_id       Int

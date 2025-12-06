@@ -8,7 +8,7 @@ export class AnswerService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateAnswerDto) {
-    const {exam_id, question_id, student_id, answer_text, score} = data;
+    const {exam_id, question_id, student_id, answer_text} = data;
 
     const examStudent = await this.prisma.exam_Student.findUnique({
       where: {exam_id_student_id : {exam_id, student_id}},
@@ -19,20 +19,24 @@ export class AnswerService {
       where: {exam_id_question_id : {exam_id, question_id}},
     });
     if(!examQuestion) throw new Error('La pregunta no pertenece al examen asignado');
-
+    
+  
     const question = await this.prisma.question.findUnique({
       where: {id: question_id},
     });
     if(!question) throw new Error('La pregunta no existe');
+    
+    let finalScore = 0;
 
     const type = question.type;
     if(type === 'Selección Múltiple' || type === 'VoF') {
       if(answer_text.trim().toLowerCase() === question.answer.trim().toLowerCase()) {
-        // Respuesta correcta
+        finalScore = question.score;
       }
+      else finalScore = 0;
     }
     return this.prisma.answer.create({
-      data: { exam_id, question_id, student_id, answer_text, score},
+      data: { exam_id, question_id, student_id, answer_text, score: finalScore },
     });
   }
 

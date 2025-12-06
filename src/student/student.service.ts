@@ -50,6 +50,11 @@ export class StudentService {
   async getReevaluationComparisonReport() {
 
   const reevals = await this.prisma.reevaluation.findMany({
+    where: {
+      score: {
+        not: null
+      }
+    },
     include: {
       exam_student: {
         include: {
@@ -75,7 +80,7 @@ export class StudentService {
     const student = examStudent.student;
 
     const originalScore = examStudent.score;
-    const recalifiedScore = r.score;
+    const recalifiedScore = r.score!;
     const subjectId = subject?.id ?? null;
     const subjectName = subject?.name ?? "Sin asignatura";
     const studentName = student.user?.name ?? "Sin nombre";

@@ -1,4 +1,4 @@
-import { IsInt, IsNumber } from 'class-validator';
+import { IsInt, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateReevaluationDto {

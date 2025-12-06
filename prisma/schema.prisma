@@ -142,7 +142,7 @@ model Approved_Exam {
   date            DateTime @default(now())
   exam            Exam         @relation(fields: [exam_id], references: [id])
   head_teacher    Head_Teacher @relation(fields: [head_teacher_id], references: [id])
-
+  seen            Boolean     @default(false)
   @@id([date, exam_id, head_teacher_id])
 }
 

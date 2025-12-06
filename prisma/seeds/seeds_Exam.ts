@@ -76,7 +76,7 @@ export async function seed_exams(prisma: PrismaClient) {
 
   console.log(`✅ Approved_Exam agregados`);
 
-  // Crear 10 preguntas por examen (del banco de la materia)
+  // Crear 10 preguntas por examen
   const examQuestions: { exam_id: number; question_id: number }[] = [];
 
   for (const exam of createdExams) {
@@ -95,45 +95,105 @@ export async function seed_exams(prisma: PrismaClient) {
 
   console.log(`✅ Exam_Question (10 por examen) agregados`);
 
-  // Respuestas — algunas correctas y otras incorrectas
-  function randomWrongAnswer(q: any): string {
-    if (q.type === "Selección Múltiple") {
-      const options = ["A", "B", "C", "D"];
-      return options.filter(o => o !== q.answer)[Math.floor(Math.random() * 3)];
-    }
 
-    if (q.type === "VoF") {
-      const wrong = q.answer === "V" ? "F" : "V";
-      return wrong;
-    }
+  // ----------------------------
+  // 🔥 FUNCIONES DE RESPUESTAS
+  // ----------------------------
 
-    return "Respuesta incorrecta";
+  // Incorrecta Selección Múltiple
+  function getWrongMultipleChoice(q: any): string {
+    const options = ["A", "B", "C", "D"];
+    return options.filter(o => o !== q.answer)[Math.floor(Math.random() * 3)];
   }
+
+  // Incorrecta VoF
+  function getWrongVoF(q: any): string {
+    return q.answer === "V" ? "F" : "V";
+  }
+
+  // Incorrecta texto
+  function getWrongText(q: any): string {
+    return `Respuesta incompleta sobre el tema ${q.question_text}`;
+  }
+
+  // Correcta texto
+  function getCorrectText(q: any): string {
+    return `Respuesta desarrollada correctamente relacionada con: ${q.question_text}`;
+  }
+
+  // Score incorrecto para texto (0 a score-1)
+  function getRandomPartialScore(maxScore: number): number {
+    if (maxScore <= 1) return 0;
+    return Math.floor(Math.random() * (maxScore - 1)) + 1; // 1..(max-1)
+  }
+
+
+  // ----------------------------
+  // 🔥 CREAR RESPUESTAS
+  // ----------------------------
 
   for (const eq of examQuestions) {
     const question = questions.find(q => q.id === eq.question_id)!;
 
     for (const student of students) {
-      const isCorrect = Math.random() < 0.6; // 60% de probabilidad de responder bien
+      const isCorrect = Math.random() < 0.6; // 60% correctas
 
-      const answerText =
-        isCorrect && question.answer !== "Texto"
-          ? question.answer
-          : randomWrongAnswer(question);
+      let answerText = "";
+      let score = 0;
 
+      // ===========================
+      //   SELECCIÓN MÚLTIPLE
+      // ===========================
+      if (question.type === "Selección Múltiple") {
+        if (isCorrect) {
+          answerText = question.answer;
+          score = question.score;
+        } else {
+          answerText = getWrongMultipleChoice(question);
+          score = 0;
+        }
+      }
+
+      // ===========================
+      //   VERDADERO O FALSO
+      // ===========================
+      else if (question.type === "VoF") {
+        if (isCorrect) {
+          answerText = question.answer;
+          score = question.score;
+        } else {
+          answerText = getWrongVoF(question);
+          score = 0;
+        }
+      }
+
+      // ===========================
+      //   TEXTO / ARGUMENTACIÓN
+      // ===========================
+      else {
+        if (isCorrect) {
+          answerText = getCorrectText(question);
+          score = question.score;
+        } else {
+          answerText = getWrongText(question);
+          score = getRandomPartialScore(question.score);
+        }
+      }
+
+      // Crear respuesta
       await prisma.answer.create({
         data: {
           exam_id: eq.exam_id,
           question_id: eq.question_id,
           student_id: student.id,
           answer_text: answerText,
-          score: isCorrect ? 1 : 0,
+          score,
         },
       });
     }
   }
 
-  console.log(`✅ Answers agregadas (correctas e incorrectas)`);
+  console.log(`✅ Answers agregadas (con texto, parciales y correctas)`);
 
   // Reevaluation
   const examStudents = await prisma.exam_Student.findMany();
@@ -150,5 +210,5 @@ export async function seed_exams(prisma: PrismaClient) {
   }
 
   console.log('✅ Reevaluations agregadas');
-  console.log('🎉 Seed completo con respuestas reales.');
+  console.log('🎉 Seed completo con respuestas realistas.');
 }

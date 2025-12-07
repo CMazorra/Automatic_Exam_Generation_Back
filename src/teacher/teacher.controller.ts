@@ -20,13 +20,13 @@ export class TeacherController {
   }
 
   @Get()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.TEACHER)
   findAll() {
     return this.teacherService.findAll();
   }
 
   @Get('all')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.TEACHER)
   findAllAll() {
     return this.teacherService.findAllAll();
   }
@@ -38,7 +38,7 @@ export class TeacherController {
   }
 
   @Get('all/:id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.TEACHER)
   findOneAll(@Param('id') id: string) {
     return this.teacherService.findOneAll(+id);
   }

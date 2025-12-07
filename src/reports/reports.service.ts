@@ -2,9 +2,8 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { WorstQuestionReportDto } from "./dto/create-report.dto";
 import { CorrelationReportDto } from "./dto/difficulty-correlation.dto";
-import { difficultyToNumber, correlation } from "src/statistics/helpers";
-import { average } from "simple-statistics";
-
+import { difficultyToNumber, correlation, balanceScore, subtopicVarietyScore } from "src/statistics/helpers";
+import { examComparisonResultDTO, subjectSummaryDTO, examSummaryDTO } from './dto/exam-distribution.dto';
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService) {}
@@ -24,26 +23,34 @@ export class ReportsService {
       },
     });
 
-    const stats = questions.map((q) => {
-      const answers = q.exam_questions.flatMap(eq => eq.answers);
+    const stats: WorstQuestionReportDto[] = [];
 
-      const total = answers.length;
-      const avgScore = total === 0 ? 0 : answers.reduce((sum,a) => sum + a.score, 0)/total;
+    for ( const q of questions)
+    {
+      const allAnswers = q.exam_questions.flatMap(eq => eq.answers);
+      const validAnswers = allAnswers.filter(a => (a.score ?? 0) > 0);
+      if(validAnswers.length === 0) continue;
+      const maxScore = q.score ?? 1;
+      const avgSCore = validAnswers.reduce(
+        (acc,a) => acc + ((a.score ?? 0) / maxScore), 0
+      ) /validAnswers.length;
 
-      return {
+      if (!q.subject || !q.teacher?.user) continue;
+
+      stats.push({
         questionId: q.id,
         questionText: q.question_text,
         difficulty: q.difficulty,
-        subject:q.subject.name,
-        teacher: q.teacher.user.name,
-        totalAnswers: total,
-        averageScore: avgScore,
-        answers,
-      };
-  })
-   .filter(q => q.totalAnswers > 0);
-  return stats.sort((a,b) => a.averageScore - b.averageScore).slice(0,10);
+        subject: q.subject?.name ?? "Desconocido",
+        teacher: q.teacher?.user?.name ?? "Desconocido",
+        totalAnswers: allAnswers.length,
+        averageScore: avgSCore
+      });
+    }
+    return stats.sort((a,b)=> a.averageScore - b.averageScore)
+    .slice(0,10);
   }
+  
    async getDifficultyCorrelation(): Promise<CorrelationReportDto[]> {
     const subjects = await this.prisma.subject.findMany({
       include: {
@@ -92,6 +99,156 @@ export class ReportsService {
     }
     return reports;
    }
+   async compareExamsBetweenSubjects(subjectIds?: number[]): Promise<examComparisonResultDTO> {
+
+    if (!subjectIds)
+    {
+      const allsubjects = await this.prisma.subject.findMany({
+        select: { id: true }
+      });
+      subjectIds = allsubjects.map(s => s.id);
+    }
+    
+    const subjects = await this.prisma.subject.findMany({
+      where: { id: { in: subjectIds } },
+      include: {
+        exams: {
+          include: {
+            exam_questions: {
+              include: {
+                question: {
+                  include: {
+                    sub_topic: {
+                      include: {
+                        topic: true
+                      }
+                    },
+                    subject: true,
+                  }
+                }
+              }
+            },
+            parameters: true
+          }
+        }
+      }
+    });
+
+    const result: subjectSummaryDTO[] = [];
+
+    for (const subject of subjects) {
+      const examSummaries: examSummaryDTO[] = [];
+
+      for (const exam of subject.exams) {
+        const questions: NonNullable<typeof exam.exam_questions>[number]["question"][] = [];
+        for (const eq of exam.exam_questions ?? []) {
+          const question = eq?.question;
+          if (!question || !question.subject) continue;
+          questions.push(question);
+        }
+
+        const totalQuestions = questions.length;
+
+        // ----------------------
+        // DISTRIBUCIÓN DIFICULTAD
+        // ----------------------
+        const difficultyCounts = { easy: 0, medium: 0, hard: 0 };
+        const numericalDiffs: number[] = [];
+
+        for (const q of questions) {
+          const d = q.difficulty?.toUpperCase?.() ?? "";
+
+          if (d.includes("FÁCIL")) difficultyCounts.easy++;
+          else if (d.includes("MEDIO")) difficultyCounts.medium++;
+          else if (d.includes("DIFÍCIL")) difficultyCounts.hard++;
+
+          numericalDiffs.push(difficultyToNumber(q.difficulty ?? "MEDIO"));
+        }
+
+        const difficultyScore = balanceScore(numericalDiffs);
+
+        // ----------------------
+        // DISTRIBUCIÓN TEMAS
+        // ----------------------
+        const topicMap: Record<string, number> = {};
+
+        for (const q of questions) {
+          const topicName = q.sub_topic?.topic?.name ?? "Desconocido";
+          topicMap[topicName] = (topicMap[topicName] || 0) + 1;
+        }
+
+        const topicDistribution = Object.entries(topicMap).map(([topicName, count]) => ({
+          topicName,
+          count,
+          percentage: totalQuestions > 0 ? (count / totalQuestions) * 100 : 0,
+        }));
+
+        const topicValues = Object.values(topicMap);
+        const topicEntropy = balanceScore(topicValues);
+
+        // ----------------------
+        // VARIEDAD SUBTEMAS
+        // ----------------------
+        const subtopicCounts: Record<number, number> = {};
+
+        for (const q of questions) {
+          const subId = q.sub_topic_id;
+          if (subId == null) continue;
+          subtopicCounts[subId] = (subtopicCounts[subId] || 0) + 1;
+        }
+
+        const varietyScore = subtopicVarietyScore(subtopicCounts);
+
+        // ----------------------
+        // EVALUACIÓN DEL BALANCE
+        // ----------------------
+        const balanced = {
+          difficulty: difficultyScore >= 0.6,
+          topic: topicEntropy >= 0.6,
+          subtopic: varietyScore >= 0.5,
+        };
+
+        // ----------------------
+        // AGREGAR RESUMEN DEL EXAMEN
+        // ----------------------
+        examSummaries.push({
+          examId: exam.id,
+          examName: exam.name,
+          totalQuestions,
+          difficultyDistribution: {
+            easy: difficultyCounts.easy,
+            medium: difficultyCounts.medium,
+            hard: difficultyCounts.hard,
+            difficultyScore
+          },
+          topicDistribution,
+          subtopicVariey: varietyScore,
+          metrics: {
+            difficultyScore,
+            topicEntropy,
+            subtopicVarietyScore: varietyScore
+          },
+          balanced,
+          parameters: exam.parameters
+        });
+      }
+
+      // puntaje global de la asignatura
+      const subjectBalanceScore =
+        examSummaries.length > 0
+          ? examSummaries.reduce((acc, e) => acc + e.metrics.difficultyScore, 0) / examSummaries.length
+          : 0;
+
+      result.push({
+        subjectId: subject.id,
+        subjectName: subject.name,
+        examSummaries,
+        subjectBalanceScore
+      });
+    }
+
+    return { subjects: result };
+  }
 
    async getExamPerformance(examId: number){
     const examQuestions = await this.prisma.exam_Question.findMany({
@@ -250,3 +407,4 @@ export class ReportsService {
   return result;
 }
 }
+

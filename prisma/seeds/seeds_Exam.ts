@@ -150,7 +150,7 @@ export async function seed_exams(prisma: PrismaClient) {
           score = question.score;
         } else {
           answerText = getWrongMultipleChoice(question);
-          score = 0;
+          score = 1;
         }
       }
 
@@ -163,7 +163,7 @@ export async function seed_exams(prisma: PrismaClient) {
           score = question.score;
         } else {
           answerText = getWrongVoF(question);
-          score = 0;
+          score = 1;
         }
       }
 

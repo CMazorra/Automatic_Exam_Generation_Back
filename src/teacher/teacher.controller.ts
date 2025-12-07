@@ -72,10 +72,7 @@ export class TeacherController {
     return this.teacherService.getSubjectsByTeacher(Number(id));
   }
 
-  @Get("review-report")
-  getTeachersReviewReport() {
-    return this.teacherService.getTeachersReviewReport();
-  }
+  
   
   @Get(':id')
   @Roles(Role.ADMIN,Role.TEACHER)

@@ -75,8 +75,7 @@ export class TeacherController {
   
   
   @Get(':id')
-  @Roles(Role.ADMIN,Role.TEACHER)
-  @RequireTeacherOwner()
+  @Roles(Role.ADMIN, Role.TEACHER)
   findOne(@Param('id') id: string) {
     return this.teacherService.findOne(+id);
   }

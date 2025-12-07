@@ -5,7 +5,7 @@ import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { RequireHeadTeacher } from '../auth/require-head-teacher.decorator';
+import { RequireTeacherOwner } from 'src/auth/require-teacher-owner.decorator';
 import { Role } from '@prisma/client';
 
 @Controller('teacher')
@@ -20,7 +20,7 @@ export class TeacherController {
   }
 
   @Get()
-  @Roles(Role.ADMIN,Role.TEACHER)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.teacherService.findAll();
   }
@@ -72,14 +72,11 @@ export class TeacherController {
     return this.teacherService.getSubjectsByTeacher(Number(id));
   }
 
-
-  @Get("review-report")
-  getTeachersReviewReport() {
-    return this.teacherService.getTeachersReviewReport();
-  }
+  
   
   @Get(':id')
   @Roles(Role.ADMIN,Role.TEACHER)
+  @RequireTeacherOwner()
   findOne(@Param('id') id: string) {
     return this.teacherService.findOne(+id);
   }

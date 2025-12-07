@@ -3,6 +3,7 @@ import { ReportsService } from "./reports.service";
 import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { WorstQuestionReportDto } from "./dto/create-report.dto";
 import { CorrelationReportDto } from "./dto/difficulty-correlation.dto";
+import { examComparisonResultDTO } from "./dto/exam-distribution.dto";
 
 @ApiTags("Reports")
 @Controller("reports")
@@ -32,4 +33,16 @@ export class ReportsController {
   async correlationReport() {
     return this.reportsService.getDifficultyCorrelation();
   }
+  @Get("compare-exams")
+  @ApiOperation({
+    summary: "Compara la distribución de preguntas entre varios exámenes",
+  })
+  @ApiResponse({
+    status: 200,
+    type: [examComparisonResultDTO],
+  })
+  async compareExams() {
+    return this.reportsService.compareExamsBetweenSubjects();
+  }
 }
+

@@ -200,7 +200,6 @@ async generated(data: GenerateExamDto) {
     return this.prisma.exam.findMany({
       where: {
         subject_id: subjectId,
-        status: 'generated',
       },
       select: {
         id: true,

@@ -102,7 +102,7 @@ export async function seed_exams(prisma: PrismaClient) {
 
   // Incorrecta Selección Múltiple
   function getWrongMultipleChoice(q: any): string {
-    const options = ["A", "B", "C", "D"];
+    const options = ["A", "B", "C"];
     return options.filter(o => o !== q.answer)[Math.floor(Math.random() * 3)];
   }
 

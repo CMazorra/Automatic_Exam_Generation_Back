@@ -268,8 +268,7 @@ export class ReportsService {
     const totalAttempts = answers.length;
 
     const correctCount = answers.filter(
-      a => a.answer_text.trim().toLowerCase() === q.answer.trim().toLowerCase()
-    ).length;
+      answers => answers.score === q.score).length;
 
     const accuracyRate = totalAttempts > 0 ? correctCount / totalAttempts : 0;
 

@@ -102,54 +102,49 @@ async generated(data: GenerateExamDto) {
     throw new BadRequestException("No existen combinaciones posibles para generar un examen.");
   }
 
-  // 3️⃣ Buscar la PRIMERA combinación que no exista en DB
+  // 3️⃣ Buscar la PRIMERA combinación que no exista en DB (para EL EXAMEN dado)
   for (const candidate of allPossibleExams) {
 
     const candidateIds = candidate.map(q => q.id).sort();
 
-    // Buscar si YA existe un examen con EXACTAMENTE esa combinación de preguntas
-    const exists = await this.prisma.exam.findFirst({
-      where: {
-        exam_questions: {
-          every: { question_id: { in: candidateIds } }
-        },
-        AND: {
-          exam_questions: {
-            none: { question_id: { notIn: candidateIds } }
-          }
-        }
-      }
+    // Verificar si YA existen EXACTAMENTE esas preguntas EN ESTE EXAMEN
+    const exists = await this.prisma.exam_Question.findMany({
+      where: { exam_id: data.exam_id },
+      select: { question_id: true }
     });
 
-    // 4️⃣ Si no existe → CREAR EL EXAMEN AQUÍ
-    if (!exists) {
-      return await this.prisma.exam.create({
-        data: {
-          name: data.name,
-          subject_id: data.subject_id,
-          teacher_id: data.teacher_id,
-          head_teacher_id: data.head_teacher_id,
-          parameters_id: data.parameters_id,
-          status: 'generated',
-          difficulty: 'mixed',
-          exam_questions: {
-            create: candidateIds.map(id => ({
-              question: { connect: { id } }
-            }))
-          }
-        },
-        include: {
-          exam_questions: { include: { question: true } }
-        }
-      });
+    const existingIds = exists.map(e => e.question_id).sort();
+
+    // Si coincide 100% → ES repetido
+    if (
+      existingIds.length === candidateIds.length &&
+      existingIds.every((id, i) => id === candidateIds[i])
+    ) {
+      continue; // seguir buscando otra combinación
     }
+
+    // 4️⃣ Insertar las preguntas en exam_question
+    await this.prisma.exam_Question.createMany({
+      data: candidateIds.map(id => ({
+        exam_id: data.exam_id,
+        question_id: id,
+      }))
+    });
+
+    // Retornar la lista generada
+    return {
+      exam_id: data.exam_id,
+      questions_added: candidateIds.length,
+      inserted_questions: candidateIds
+    };
   }
 
   // 5️⃣ Si todas las combinaciones ya existen → imposible generar uno nuevo
   throw new BadRequestException(
-    "No es posible generar un examen nuevo. Todas las combinaciones posibles ya existen."
+    "No es posible generar una nueva combinación. Todas las combinaciones posibles ya existen para este examen."
   );
 }
+
 
 
 

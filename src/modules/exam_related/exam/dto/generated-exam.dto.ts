@@ -1,31 +1,32 @@
-// src/modules/exams/dto/generate-exam.dto.ts
 import { Type } from 'class-transformer';
-import {IsArray,IsInt,IsString,Min,ValidateNested} from 'class-validator';
+import { IsArray, IsInt, IsString, Min, ValidateNested } from 'class-validator';
 
 class QuestionDistributionDto {
   @IsString()
   type: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   amount: number;
 }
 
 export class GenerateExamDto {
-  @IsString()
-  name: string;
+  @Type(() => Number)
+  @IsInt()
+  exam_id: number;
 
+  @Type(() => Number)
   @IsInt()
   subject_id: number;
 
+  @Type(() => Number)
   @IsInt()
   teacher_id: number;
 
+  @Type(() => Number)
   @IsInt()
   head_teacher_id: number;
-
-  @IsInt()
-  parameters_id: number;
 
   @IsArray()
   @ValidateNested({ each: true })

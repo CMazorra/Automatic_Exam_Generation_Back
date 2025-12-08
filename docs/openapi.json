@@ -1,0 +1,2872 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/app": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/app/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/app/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/app/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/app/exam": {
+      "post": {
+        "operationId": "ExamController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      },
+      "get": {
+        "operationId": "ExamController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      }
+    },
+    "/app/exam/generate": {
+      "post": {
+        "operationId": "ExamController_generated",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateExamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      }
+    },
+    "/app/exam/generated/subject/{subjectId}": {
+      "get": {
+        "operationId": "ExamController_getGeneratedExamsBySubject",
+        "parameters": [
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      }
+    },
+    "/app/exam/{id}": {
+      "get": {
+        "operationId": "ExamController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      },
+      "patch": {
+        "operationId": "ExamController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      },
+      "delete": {
+        "operationId": "ExamController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Exam"
+        ]
+      }
+    },
+    "/app/exam-student": {
+      "post": {
+        "operationId": "ExamStudentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExamStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamStudent"
+        ]
+      },
+      "get": {
+        "operationId": "ExamStudentController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamStudent"
+        ]
+      }
+    },
+    "/app/exam-student/{exam_id}/{student_id}": {
+      "get": {
+        "operationId": "ExamStudentController_findOne",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamStudent"
+        ]
+      },
+      "patch": {
+        "operationId": "ExamStudentController_update",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExamStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamStudent"
+        ]
+      },
+      "delete": {
+        "operationId": "ExamStudentController_remove",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamStudent"
+        ]
+      }
+    },
+    "/app/approved-exam": {
+      "post": {
+        "operationId": "ApprovedExamController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApprovedExamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      },
+      "get": {
+        "operationId": "ApprovedExamController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      }
+    },
+    "/app/approved-exam/head-teacher/{id}": {
+      "get": {
+        "operationId": "ApprovedExamController_listApprovedByHeadTeacher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      }
+    },
+    "/app/approved-exam/{date}/{exam_id}/{head_teacher_id}": {
+      "get": {
+        "operationId": "ApprovedExamController_findOne",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "head_teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      },
+      "patch": {
+        "operationId": "ApprovedExamController_update",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "head_teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApprovedExamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      },
+      "delete": {
+        "operationId": "ApprovedExamController_remove",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "head_teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ApprovedExam"
+        ]
+      }
+    },
+    "/app/exam-question": {
+      "post": {
+        "operationId": "ExamQuestionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExamQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      },
+      "get": {
+        "operationId": "ExamQuestionController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      }
+    },
+    "/app/exam-question/{exam_id}/{question_id}": {
+      "get": {
+        "operationId": "ExamQuestionController_findOne",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      },
+      "patch": {
+        "operationId": "ExamQuestionController_update",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExamQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      },
+      "delete": {
+        "operationId": "ExamQuestionController_remove",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      }
+    },
+    "/app/exam-question/most-used": {
+      "get": {
+        "operationId": "ExamQuestionController_mostUsedQuestions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "ExamQuestion"
+        ]
+      }
+    },
+    "/app/answer": {
+      "post": {
+        "operationId": "AnswerController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAnswerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      },
+      "get": {
+        "operationId": "AnswerController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      }
+    },
+    "/app/answer/{exam_id}/{question_id}/{student_id}": {
+      "get": {
+        "operationId": "AnswerController_findOne",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      },
+      "patch": {
+        "operationId": "AnswerController_update",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAnswerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      },
+      "delete": {
+        "operationId": "AnswerController_remove",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "question_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      }
+    },
+    "/app/answer/{exam_id}/{student_id}": {
+      "get": {
+        "operationId": "AnswerController_findByExamAndStudent",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Answer"
+        ]
+      }
+    },
+    "/app/reevaluation": {
+      "post": {
+        "operationId": "ReevaluationController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReevaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reevaluation"
+        ]
+      },
+      "get": {
+        "operationId": "ReevaluationController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reevaluation"
+        ]
+      }
+    },
+    "/app/reevaluation/{exam_id}/{student_id}/{teacher_id}": {
+      "get": {
+        "operationId": "ReevaluationController_findOne",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reevaluation"
+        ]
+      },
+      "patch": {
+        "operationId": "ReevaluationController_update",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReevaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reevaluation"
+        ]
+      },
+      "delete": {
+        "operationId": "ReevaluationController_remove",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "student_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reevaluation"
+        ]
+      }
+    },
+    "/app/user": {
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_findAllActive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/all": {
+      "get": {
+        "operationId": "UserController_findAllAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/deleted/all": {
+      "get": {
+        "operationId": "UserController_findAllDelete",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/all/{id}": {
+      "get": {
+        "operationId": "UserController_findOneAll",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/deleted/{id}": {
+      "get": {
+        "operationId": "UserController_findOneDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/user/restore/{id}": {
+      "patch": {
+        "operationId": "UserController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/app/teacher": {
+      "post": {
+        "operationId": "TeacherController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "get": {
+        "operationId": "TeacherController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/all": {
+      "get": {
+        "operationId": "TeacherController_findAllAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/deleted": {
+      "get": {
+        "operationId": "TeacherController_findAllDeleted",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/all/{id}": {
+      "get": {
+        "operationId": "TeacherController_findOneAll",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/deleted/{id}": {
+      "get": {
+        "operationId": "TeacherController_findOneDeleted",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/{id}": {
+      "patch": {
+        "operationId": "TeacherController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "delete": {
+        "operationId": "TeacherController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "get": {
+        "operationId": "TeacherController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/restore/{id}": {
+      "patch": {
+        "operationId": "TeacherController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/{id}/subjects": {
+      "get": {
+        "operationId": "TeacherController_getSubjects",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/student": {
+      "post": {
+        "operationId": "StudentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      },
+      "get": {
+        "operationId": "StudentController_findAllActive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/all": {
+      "get": {
+        "operationId": "StudentController_findAllAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/deleted/all": {
+      "get": {
+        "operationId": "StudentController_findAllDeleted",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/all/{id}": {
+      "get": {
+        "operationId": "StudentController_findOneAll",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/deleted/{id}": {
+      "get": {
+        "operationId": "StudentController_findOneDeleted",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/{id}": {
+      "patch": {
+        "operationId": "StudentController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      },
+      "delete": {
+        "operationId": "StudentController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      },
+      "get": {
+        "operationId": "StudentController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/restore/{id}": {
+      "patch": {
+        "operationId": "StudentController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/student/{id}/subjects": {
+      "get": {
+        "operationId": "StudentController_getStudentSubjects",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
+    "/app/head-teacher": {
+      "post": {
+        "operationId": "HeadTeacherController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHeadTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      },
+      "get": {
+        "operationId": "HeadTeacherController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/all": {
+      "get": {
+        "operationId": "HeadTeacherController_findAllAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/deleted": {
+      "get": {
+        "operationId": "HeadTeacherController_findAllDeleted",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/all/{id}": {
+      "get": {
+        "operationId": "HeadTeacherController_findOneAll",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/deleted/{id}": {
+      "get": {
+        "operationId": "HeadTeacherController_findOneDeleted",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/{id}": {
+      "get": {
+        "operationId": "HeadTeacherController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      },
+      "patch": {
+        "operationId": "HeadTeacherController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHeadTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      },
+      "delete": {
+        "operationId": "HeadTeacherController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/head-teacher/restore/{id}": {
+      "patch": {
+        "operationId": "HeadTeacherController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "HeadTeacher"
+        ]
+      }
+    },
+    "/app/topics": {
+      "post": {
+        "operationId": "TopicController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTopicDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      },
+      "get": {
+        "operationId": "TopicController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      }
+    },
+    "/app/topics/{id}": {
+      "get": {
+        "operationId": "TopicController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      },
+      "put": {
+        "operationId": "TopicController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTopicDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      },
+      "delete": {
+        "operationId": "TopicController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      }
+    },
+    "/app/topics/subject/{id}": {
+      "get": {
+        "operationId": "TopicController_getTopicsBySubject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Topic"
+        ]
+      }
+    },
+    "/app/subtopics": {
+      "post": {
+        "operationId": "SubTopicController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubTopicDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubTopic"
+        ]
+      },
+      "get": {
+        "operationId": "SubTopicController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubTopic"
+        ]
+      }
+    },
+    "/app/subtopics/{id}/{topic_id}": {
+      "get": {
+        "operationId": "SubTopicController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "topic_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubTopic"
+        ]
+      },
+      "put": {
+        "operationId": "SubTopicController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "topic_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubTopicDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubTopic"
+        ]
+      },
+      "delete": {
+        "operationId": "SubTopicController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "topic_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubTopic"
+        ]
+      }
+    },
+    "/app/subjects": {
+      "post": {
+        "operationId": "SubjectController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubjectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      },
+      "get": {
+        "operationId": "SubjectController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      }
+    },
+    "/app/subjects/{id}": {
+      "get": {
+        "operationId": "SubjectController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      },
+      "put": {
+        "operationId": "SubjectController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubjectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      },
+      "delete": {
+        "operationId": "SubjectController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      }
+    },
+    "/app/subjects/{id}/teachers": {
+      "get": {
+        "operationId": "SubjectController_getTeachers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      }
+    },
+    "/app/subjects/{id}/students": {
+      "get": {
+        "operationId": "SubjectController_getSubjectStudents",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subject"
+        ]
+      }
+    },
+    "/app/questions": {
+      "post": {
+        "operationId": "QuestionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Question"
+        ]
+      },
+      "get": {
+        "operationId": "QuestionController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Question"
+        ]
+      }
+    },
+    "/app/questions/{id}": {
+      "get": {
+        "operationId": "QuestionController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Question"
+        ]
+      },
+      "put": {
+        "operationId": "QuestionController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Question"
+        ]
+      },
+      "delete": {
+        "operationId": "QuestionController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Question"
+        ]
+      }
+    },
+    "/app/parameters": {
+      "post": {
+        "operationId": "ParametersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateParametersDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Parameters"
+        ]
+      },
+      "get": {
+        "operationId": "ParametersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Parameters"
+        ]
+      }
+    },
+    "/app/parameters/{id}": {
+      "get": {
+        "operationId": "ParametersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Parameters"
+        ]
+      },
+      "put": {
+        "operationId": "ParametersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateParametersDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Parameters"
+        ]
+      },
+      "delete": {
+        "operationId": "ParametersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Parameters"
+        ]
+      }
+    },
+    "/app/reports/worst-questions": {
+      "get": {
+        "operationId": "ReportsController_getWorstQuestions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorstQuestionReportDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtiene las 10 preguntas con mayor tasa de reprobación",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/app/reports/difficulty-performance-correlation": {
+      "get": {
+        "operationId": "ReportsController_correlationReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CorrelationReportDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtiene la correlación entre dificultad y desempeño por materia",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/app/reports/compare-exams": {
+      "get": {
+        "operationId": "ReportsController_compareExams",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/examComparisonResultDTO"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Compara la distribución de preguntas entre varios exámenes",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/app/reports/{id}/exam-performance": {
+      "get": {
+        "operationId": "ReportsController_getPerformance",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "desempeño de los estudiantes dado un examen",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/app/reports/teachers-review-report": {
+      "get": {
+        "operationId": "ReportsController_getTeachersReviewReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Obtiene los profesores que han realizado exámenes en los últimos dos semestres",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/app/reports/reevaluation-comparison": {
+      "get": {
+        "operationId": "ReportsController_getReevaluationComparisonReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Obtiene el desempeño de los estudiantes que han solicitado una recalificación",
+        "tags": [
+          "Reports"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Script",
+    "description": "API description",
+    "version": "0.1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginAuthDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateExamDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateExamDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateExamStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateExamStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateApprovedExamDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateApprovedExamDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateExamQuestionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateExamQuestionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateAnswerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateAnswerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateReevaluationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateReevaluationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTeacherDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTeacherDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateHeadTeacherDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateHeadTeacherDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTopicDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTopicDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSubTopicDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSubTopicDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSubjectDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSubjectDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateQuestionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateQuestionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateParametersDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateParametersDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "WorstQuestionReportDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "number"
+          },
+          "questionText": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "teacher": {
+            "type": "string"
+          },
+          "totalAnswers": {
+            "type": "number"
+          },
+          "averageScore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "questionId",
+          "questionText",
+          "difficulty",
+          "subject",
+          "teacher",
+          "totalAnswers",
+          "averageScore"
+        ]
+      },
+      "CorrelationReportDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "examComparisonResultDTO": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

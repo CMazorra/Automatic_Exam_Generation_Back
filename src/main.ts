@@ -10,21 +10,23 @@ async function bootstrap() {
      .setTitle('Script')
      .setDescription('API description')
      .setVersion('0.1')
-    //   .addBearerAuth(  // 👈 ESTA LÍNEA AGREGA EL BOTÓN “Authorize”
-    //   {
-    //     type: 'http',
-    //     scheme: 'bearer',
-    //     bearerFormat: 'JWT',
-    //     name: 'JWT',
-    //     description: 'Introduce tu token JWT aquí',
-    //     in: 'header',
-    //   },
-    //   'access-token', // nombre de la referencia, puedes dejarlo así
-    // )
+     .addBearerAuth()
      .build()
     
      const document = SwaggerModule.createDocument(app, config);
      SwaggerModule.setup('api', app, document);   
+
+     const fs = require('fs');
+     const path = require('path');
+     const outDir = path.join(process.cwd(), 'docs');
+
+     // ensure docs directory exists before writing
+     if (!fs.existsSync(outDir)) {
+       fs.mkdirSync(outDir, { recursive: true });
+     }
+
+     fs.writeFileSync(path.join(outDir, 'openapi.json'), JSON.stringify(document, null, 2));
+
   app.use(cookieParser());
   app.enableCors({origin: 'http://localhost:3000', credentials: true,});
   await app.listen(process.env.PORT ?? 5000);

@@ -211,6 +211,18 @@ export async function seed_exams(prisma: PrismaClient) {
           score,
         },
       });
+      await prisma.exam_Student.update({
+        where: {
+          exam_id_student_id: { // si tu clave primaria compuesta es exam_id + student_id
+            exam_id: eq.exam_id,
+            student_id: es.student_id,
+  
+          },
+        },
+        data: {
+          score: { increment: score } // suma la puntuación de esta respuesta al total
+        },
+      });
 
     }  
   }
@@ -242,7 +254,7 @@ for (const es of random20Students) {
       exam_id: es.exam_id,
       student_id: es.student_id,
       teacher_id: randomTeacher.id,
-      score: Math.floor(Math.random() * 5) + 5, // 5..9
+      score: es.score + (Math.floor(Math.random() * 5) + 5), // 5..9
     },
   });
 }

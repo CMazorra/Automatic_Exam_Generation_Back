@@ -267,8 +267,13 @@ export class ReportsService {
 
     const totalAttempts = answers.length;
 
-    const correctCount = answers.filter(
-      answers => answers.score === q.score).length;
+    const correctCount = answers.filter(a => {
+      if (q.type === "Selección Múltiple") {
+        return a.score >= 0.6 * q.score; // al menos 60% de la nota máxima
+      } else {
+        return a.score === q.score; // para los demás tipos, sigue siendo todo o nada
+      }
+    }).length;
 
     const accuracyRate = totalAttempts > 0 ? correctCount / totalAttempts : 0;
 

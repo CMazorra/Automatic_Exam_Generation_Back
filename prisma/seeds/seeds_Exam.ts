@@ -84,7 +84,15 @@ export async function seed_exams(prisma: PrismaClient) {
         guidelines: 'Siga las instrucciones correctamente',
       },
     });
-  }
+
+    await prisma.exam.update({
+    where: { id: exam.id },
+    data: {
+      status: 'Aprobado',
+    },
+  });
+}
+  
 
   console.log(`✅ Approved_Exam agregados`);
 

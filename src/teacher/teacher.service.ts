@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Head, Injectable } from '@nestjs/common';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -53,7 +53,17 @@ async getSubjectsByTeacher(teacherId: number) {
     include: { subjects: true },
   });
 
-  return teacher?.subjects ?? [];
+  const headteacher = await this.prisma.head_Teacher.findFirst({ 
+    where: {id: teacherId},
+    include: {subject: true},});
+
+  const subjectsAsTeacher = teacher?.subjects ?? [];
+  const subjectsAsHead = headteacher?.subject ?? [];
+
+  return {
+    subjectsAsTeacher,
+    subjectsAsHead
+  };
 }
 
 }

@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RequireHeadTeacher } from '../auth/require-head-teacher.decorator';
-import { RequireTeacherOwner } from 'src/auth/require-teacher-owner.decorator';
+import { RequireTeacherOwner } from '../auth/require-teacher-owner.decorator';
 import { Role } from '@prisma/client';
 
 

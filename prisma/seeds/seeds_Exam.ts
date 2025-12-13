@@ -141,7 +141,7 @@ export async function seed_exams(prisma: PrismaClient) {
     return `Respuesta desarrollada correctamente relacionada con: ${q.question_text}`;
   }
 
-  // Score incorrecto para texto (0 a score-1)
+  // Score incorrecto para texto (1 a score-1)
   function getRandomPartialScore(maxScore: number): number {
     if (maxScore <= 1) return 0;
     return Math.floor(Math.random() * (maxScore - 1)) + 1; // 1..(max-1)

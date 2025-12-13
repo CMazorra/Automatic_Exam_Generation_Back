@@ -26,14 +26,14 @@ export class AnswerService {
     });
     if(!question) throw new Error('La pregunta no existe');
     
-    let finalScore = 0;
+    let finalScore = 1;
 
     const type = question.type;
     if(type === 'Selección Múltiple' || type === 'VoF') {
       if(answer_text.trim().toLowerCase() === question.answer.trim().toLowerCase()) {
         finalScore = question.score;
       }
-      else finalScore = 0;
+      else finalScore = 1;
     }
     return this.prisma.answer.create({
       data: { exam_id, question_id, student_id, answer_text, score: finalScore },

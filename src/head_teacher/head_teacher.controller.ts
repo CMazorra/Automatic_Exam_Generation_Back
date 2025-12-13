@@ -53,7 +53,6 @@ export class HeadTeacherController {
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
-  @RequireTeacherOwner()
   findOne(@Param('id') id: string) {
     return this.headTeacherService.findOne(+id);
   }

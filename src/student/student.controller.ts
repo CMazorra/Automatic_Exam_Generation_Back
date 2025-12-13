@@ -7,7 +7,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RequireHeadTeacher } from '../auth/require-head-teacher.decorator';
 import { Role } from '@prisma/client';
-import { RequireStudentOwner } from 'src/auth/require-student-owner.decorator';
+import { RequireStudentOwner } from '../auth/require-student-owner.decorator';
 
 @Controller('student')
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -2,9 +2,11 @@ import { IsInt, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateReevaluationDto {
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber({ maxDecimalPlaces: 2 })
-  score: number;
+  score?: number;
 
   @Type(() => Number)
   @IsInt()

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateApprovedExamDto } from './dto/create-approved_exam.dto';
 import { UpdateApprovedExamDto } from './dto/update-approved_exam.dto';
+import { normalizeDate } from 'src/statistics/helpers';
 
 @Injectable()
 export class approved_examService {
@@ -20,14 +21,14 @@ export class approved_examService {
 
     const lower = guidelines.toLowerCase();
     const isRejected = lower.includes('rechazado')
-
+    const date = normalizeDate(new Date());
     await this.prisma.exam.update({
       where: {id:exam_id},
       data: {status : isRejected ? 'Rechazado' : 'Aprobado'},
     });
 
     return this.prisma.approved_Exam.create({
-      data: { exam_id, head_teacher_id, guidelines},
+      data: { date,exam_id, head_teacher_id, guidelines},
     });
   }
 
@@ -44,7 +45,7 @@ export class approved_examService {
     return this.prisma.approved_Exam.findUnique({
       where:{
         date_exam_id_head_teacher_id: {
-          date,
+          date: normalizeDate(date),
           exam_id,
           head_teacher_id,
       },
@@ -60,7 +61,7 @@ export class approved_examService {
     return this.prisma.approved_Exam.update({
       where: {
         date_exam_id_head_teacher_id: {
-          date,
+          date: normalizeDate(date),
           exam_id,
           head_teacher_id,
         },
@@ -73,7 +74,7 @@ export class approved_examService {
     return this.prisma.approved_Exam.delete({
       where: {
         date_exam_id_head_teacher_id: {
-          date,
+          date: normalizeDate(date),
           exam_id,
           head_teacher_id,
         },

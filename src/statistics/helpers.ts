@@ -46,3 +46,8 @@ export function subtopicVarietyScore(subtopicCounts: Record<number, number>): nu
 
   return minCount / maxCount; // simple, eficaz
 }
+
+export function normalizeDate(d: Date) {
+  d.setMilliseconds(0);
+  return d;
+}

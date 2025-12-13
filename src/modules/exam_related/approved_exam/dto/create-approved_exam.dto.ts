@@ -4,10 +4,6 @@ import { Type } from 'class-transformer';
 export class CreateApprovedExamDto {
     @Type(() => Number)
     @IsInt()
-    date_id: number;
-
-    @Type(() => Number)
-    @IsInt()
     exam_id: number;
 
     @Type(() => Number)

@@ -26,6 +26,7 @@ export async function seed_exams(prisma: PrismaClient) {
     { name: 'Examen Física 1', status: 'Pendiente', difficulty: 'dificil' },
     { name: 'Examen Química 1', status: 'Pendiente', difficulty: 'facil' },
     { name: 'Examen Historia 1', status: 'Pendiente', difficulty: 'medio' },
+    { name: 'Examen Biología 1', status: 'Pendiente', difficulty: 'facil' },
   ];
 
   const createdExams: Exam[] = [];
@@ -48,17 +49,28 @@ export async function seed_exams(prisma: PrismaClient) {
   }
 
   // Exam_Student
+   console.log(`🧑‍🎓 Asignando estudiantes a sus exámenes correspondientes...`);
+
   for (const exam of createdExams) {
-    for (const student of students) {
+    const subject = await prisma.subject.findUnique({
+      where: { id: exam.subject_id },
+      include: { students: true, teachers:true }
+    });
+    if (!subject) continue;
+
+    for (const student of subject!.students) {
+      const teacherForStudent = subject!.teachers[Math.floor(Math.random() * subject!.teachers.length)];
       await prisma.exam_Student.create({
         data: {
           exam_id: exam.id,
           student_id: student.id,
-          teacher_id: exam.teacher_id,
+          teacher_id: teacherForStudent.id,
           score: 0,
-        },
+        }
       });
     }
+
+    console.log(`📘 ${subject!.students.length} estudiantes asignados al examen de ${subject!.name}`);
   }
 
   console.log(`✅ Exam_Student agregados`);
@@ -103,7 +115,7 @@ export async function seed_exams(prisma: PrismaClient) {
   // Incorrecta Selección Múltiple
   function getWrongMultipleChoice(q: any): string {
     const options = ["A", "B", "C"];
-    return options.filter(o => o !== q.answer)[Math.floor(Math.random() * 3)];
+    return options.filter(o => o !== q.answer)[Math.floor(Math.random() * 2)];
   }
 
   // Incorrecta VoF
@@ -134,11 +146,14 @@ export async function seed_exams(prisma: PrismaClient) {
 
   for (const eq of examQuestions) {
     const question = questions.find(q => q.id === eq.question_id)!;
+    const examStudents = await prisma.exam_Student.findMany({
+      where: { exam_id: eq.exam_id }
+    });
 
-    for (const student of students) {
-      const isCorrect = Math.random() < 0.6; // 60% correctas
+    for (const es of examStudents) {
+      const isCorrect = Math.random() < 0.8; // 80% correctas
 
-      let answerText = "";
+      let answerText: string = "";
       let score = 0;
 
       // ===========================
@@ -153,7 +168,6 @@ export async function seed_exams(prisma: PrismaClient) {
           score = 1;
         }
       }
-
       // ===========================
       //   VERDADERO O FALSO
       // ===========================
@@ -166,11 +180,10 @@ export async function seed_exams(prisma: PrismaClient) {
           score = 1;
         }
       }
-
       // ===========================
       //   TEXTO / ARGUMENTACIÓN
       // ===========================
-      else {
+      else if (question.type === "Texto" || question.type === "Argumentación") {
         if (isCorrect) {
           answerText = getCorrectText(question);
           score = question.score;
@@ -179,35 +192,61 @@ export async function seed_exams(prisma: PrismaClient) {
           score = getRandomPartialScore(question.score);
         }
       }
+      // ===========================
+      //   CASO DESCONOCIDO
+      // ===========================
+      else {
+        answerText = `Respuesta automática para tipo desconocido: ${question.type}`;
+        score = 0;
+        console.warn("⚠️ Tipo de pregunta desconocido:", question.type);
+      }
 
       // Crear respuesta
       await prisma.answer.create({
         data: {
           exam_id: eq.exam_id,
           question_id: eq.question_id,
-          student_id: student.id,
-          answer_text: answerText,
+          student_id: es.student_id,
+          answer_text: answerText ?? "Respuesta no proporcionada",
           score,
         },
       });
-    }
-  }
 
+    }  
+  }
   console.log(`✅ Answers agregadas (con texto, parciales y correctas)`);
 
   // Reevaluation
-  const examStudents = await prisma.exam_Student.findMany();
-
-  for (const es of examStudents.slice(0, 5)) {
-    await prisma.reevaluation.create({
-      data: {
-        exam_id: es.exam_id,
-        student_id: es.student_id,
-        teacher_id: es.teacher_id,
-        score: Math.floor(Math.random() * 5) + 5,
-      },
-    });
+const examStudents = await prisma.exam_Student.findMany({
+  include: {
+    exam: {
+      include: {
+        subject: { include: { teachers: true } } // traer los docentes de la materia
+      }
+    }
   }
+});
+const shuffledStudents = examStudents.sort(() => Math.random() - 0.5);
+const random20Students = shuffledStudents.slice(0, 20);
+
+// Crear reevaluaciones para algunos estudiantes
+for (const es of random20Students) { 
+  const teachersForSubject = es.exam.subject.teachers;
+  if (!teachersForSubject.length) continue;
+
+  // Elegir un profesor aleatorio de la materia
+  const randomTeacher = teachersForSubject[Math.floor(Math.random() * teachersForSubject.length)];
+
+  await prisma.reevaluation.create({
+    data: {
+      exam_id: es.exam_id,
+      student_id: es.student_id,
+      teacher_id: randomTeacher.id,
+      score: Math.floor(Math.random() * 5) + 5, // 5..9
+    },
+  });
+}
+
 
   console.log('✅ Reevaluations agregadas');
   console.log('🎉 Seed completo con respuestas realistas.');

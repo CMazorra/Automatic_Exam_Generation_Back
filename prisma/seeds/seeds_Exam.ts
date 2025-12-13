@@ -147,6 +147,18 @@ export async function seed_exams(prisma: PrismaClient) {
     return Math.floor(Math.random() * (maxScore - 1)) + 1; // 1..(max-1)
   }
 
+  function getCorrectProbability(difficulty: string): number {
+  switch (difficulty.toLowerCase()) {
+    case 'facil':
+      return 0.95; // 95% correctas
+    case 'medio':
+      return 0.80; // 80% correctas
+    case 'dificil':
+      return 0.60; // 60% correctas
+    default:
+      return 0.75;
+  }
+}
 
   // ----------------------------
   // 🔥 CREAR RESPUESTAS
@@ -159,7 +171,10 @@ export async function seed_exams(prisma: PrismaClient) {
     });
 
     for (const es of examStudents) {
-      const isCorrect = Math.random() < 0.8; // 80% correctas
+      const exam = createdExams.find(e => e.id === eq.exam_id)!;
+      const probability = getCorrectProbability(exam.difficulty);
+      const isCorrect = Math.random() < probability;
+
 
       let answerText: string = "";
       let score = 0;
@@ -262,7 +277,7 @@ for (const es of random20Students) {
       exam_id: es.exam_id,
       student_id: es.student_id,
       teacher_id: randomTeacher.id,
-      score: es.score + (Math.floor(Math.random() * 5) + 5), // 5..9
+      score: (es.score ?? 0) + (Math.floor(Math.random() * 5) + 5), // 5..9
     },
   });
 }

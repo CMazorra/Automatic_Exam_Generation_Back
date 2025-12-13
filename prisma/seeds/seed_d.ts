@@ -3,7 +3,7 @@ import { Subject } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function seed_subjects_questions() {
+export async function seed_subjects_questions(prisma: PrismaClient) {
   console.log('🌱 Cargando datos de materias, subtemas y preguntas...');
 
   // Crear Topics

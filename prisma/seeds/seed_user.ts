@@ -1,16 +1,17 @@
-import { PrismaService } from '../src/prisma/prisma.service';
-import { UserService } from '../src/user/user.service';
-import { StudentService } from '../src/student/student.service';
-import { TeacherService } from '../src/teacher/teacher.service';
-import { HeadTeacherService } from '../src/head_teacher/head_teacher.service';
-import { CreateUserDto } from '../src/user/dto/create-user.dto';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { UserService } from '../../src/user/user.service';
+import { StudentService } from '../../src/student/student.service';
+import { TeacherService } from '../../src/teacher/teacher.service';
+import { HeadTeacherService } from '../../src/head_teacher/head_teacher.service';
+import { CreateUserDto } from '../../src/user/dto/create-user.dto';
 import { Role } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import 'dotenv/config';
 
-async function main() {
-  const prisma = new PrismaService();
-  const jwt = new JwtService({secret: 'clave_de_prueba'});
+export async function seed_users(prisma: PrismaService) {
+  console.log('🌱 Seed: Users');
+
+  const jwt = new JwtService({ secret: 'clave_de_prueba' }); // aunque no se use, no molesta
   const userService = new UserService(prisma);
   const studentService = new StudentService(prisma);
   const teacherService = new TeacherService(prisma);
@@ -92,41 +93,33 @@ async function main() {
       continue;
     }
 
-    // Crear usuario
     const newUser = await userService.create(userData);
     console.log(`✅ Usuario creado: ${newUser.name} (${newUser.role})`);
 
-    // Crear registro según el rol
     switch (newUser.role) {
       case Role.STUDENT:
         await studentService.create({ id: newUser.id_us });
-        console.log(`🎓 Estudiante vinculado al usuario ${newUser.account}`);
         break;
 
       case Role.TEACHER:
-        const isHead = ['laura01', 'carlos02','ana03','jose04','sofia05'].includes(newUser.account); // puedes ajustar esto
+        const isHead = ['laura01', 'carlos02', 'ana03', 'jose04', 'sofia05']
+          .includes(newUser.account);
+
         const teacher = await teacherService.create({
           id: newUser.id_us,
-          specialty: 'Ingieniería',
+          specialty: 'Ingeniería',
           isHeadTeacher: isHead,
         });
-        console.log(`👩‍🏫 Profesor ${teacher.id} (${teacher.specialty})`);
+
         if (isHead) {
           await headTeacherService.create({ id: teacher.id });
-          console.log(`🧠 HeadTeacher creado para ${newUser.account}`);
         }
         break;
 
       case Role.ADMIN:
-        console.log(`🧑‍💼 Admin vinculado al usuario ${newUser.account}`);
         break;
     }
   }
 
-  await prisma.$disconnect();
+  console.log('✅ Seed users completado');
 }
-
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});

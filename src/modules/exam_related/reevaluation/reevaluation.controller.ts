@@ -21,14 +21,11 @@ export class ReevaluationController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.TEACHER)
   findAll() {
     return this.reevaluationService.findAll();
   }
 
  @Get(':exam_id/:student_id/:teacher_id')
-  @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
-  @RequireStudentOwner()
   findOne(
     @Param('exam_id') exam_id: string,
     @Param('student_id') student_id: string,

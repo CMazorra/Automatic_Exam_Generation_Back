@@ -123,7 +123,7 @@ model Sub_Topic {
 }
 
 model Exam_Student {
-  score         Float
+  score         Float?
   exam_id       Int
   student_id    Int
   teacher_id    Int

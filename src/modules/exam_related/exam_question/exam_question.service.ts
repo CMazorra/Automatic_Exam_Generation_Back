@@ -106,13 +106,4 @@ export class ExamQuestionService {
     return questions;
   }
 
-
-
-
-
-
-
-
-
-
 }

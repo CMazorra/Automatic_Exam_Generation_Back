@@ -20,14 +20,6 @@ export class GenerateExamDto {
   @IsInt()
   subject_id: number;
 
-  @Type(() => Number)
-  @IsInt()
-  teacher_id: number;
-
-  @Type(() => Number)
-  @IsInt()
-  head_teacher_id: number;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => QuestionDistributionDto)

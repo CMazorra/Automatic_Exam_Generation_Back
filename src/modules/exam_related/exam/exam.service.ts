@@ -16,7 +16,43 @@ async create(
 ) {
   return this.prisma.$transaction(async (tx) => {
 
-    // 1. Crear examen
+    // 0. Normalizar preguntas (orden fijo)
+    const normalizedQuestions = [...questions].sort((a, b) => a - b);
+
+    // 1. Buscar exámenes existentes del mismo contexto
+    const existingExams = await tx.exam.findMany({
+      where: {
+        subject_id: dto.subject_id,
+        teacher_id: dto.teacher_id,
+      },
+      include: {
+        exam_questions: {
+          select: { question_id: true },
+        },
+      },
+    });
+
+    // 2. Verificar duplicado exacto
+    for (const existingExam of existingExams) {
+      const existingQuestions = existingExam.exam_questions
+        .map(q => q.question_id)
+        .sort((a, b) => a - b);
+
+      const isDuplicate =
+        existingQuestions.length === normalizedQuestions.length &&
+        existingQuestions.every(
+          (value, index) => value === normalizedQuestions[index],
+        );
+
+      if (isDuplicate) {
+        console.log(
+          `Examen duplicado detectado. Coincide con el examen ID ${existingExam.id}`,
+        );
+        throw new Error('Examen duplicado: mismo conjunto de preguntas');
+      }
+    }
+
+    // 3. Crear examen
     const exam = await tx.exam.create({
       data: {
         name: dto.name,
@@ -29,10 +65,10 @@ async create(
       },
     });
 
-    // 2. Crear exam_question
-    if (questions.length > 0) {
+    // 4. Crear relaciones exam_question
+    if (normalizedQuestions.length > 0) {
       await tx.exam_Question.createMany({
-        data: questions.map((id) => ({
+        data: normalizedQuestions.map((id) => ({
           exam_id: exam.id,
           question_id: id,
         })),
@@ -40,7 +76,7 @@ async create(
       });
     }
 
-    // 3. Retornar examen completo
+    // 5. Retornar examen completo
     return tx.exam.findUnique({
       where: { id: exam.id },
       include: {
@@ -51,6 +87,7 @@ async create(
     });
   });
 }
+
 async generated(data: GenerateExamDto) {
 
   // Helper: generar combinaciones

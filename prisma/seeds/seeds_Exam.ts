@@ -49,7 +49,7 @@ export async function seed_exams(prisma: PrismaClient) {
     const exam = await prisma.exam.create({
       data: {
         name: e.name,
-        status: 'Pendiente',
+        status: 'Aprobado',
         difficulty: e.difficulty,
         subject_id: subject.id,
         teacher_id: teachers[i % teachers.length].id,

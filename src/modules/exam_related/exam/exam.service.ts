@@ -10,16 +10,28 @@ import { BadRequestException } from '@nestjs/common';
 export class ExamService {
   constructor(private readonly prisma: PrismaService) {}
 //Task 4
+
+
+
+
 async create(
   dto: CreateExamDto,
   questions: number[] = [],
 ) {
+
+  // VALIDACIÓN 1: no permitir exámenes sin preguntas
+  if (!questions || questions.length === 0) {
+    throw new BadRequestException(
+      'No se puede crear un examen sin preguntas',
+    );
+  }
+
   return this.prisma.$transaction(async (tx) => {
 
-    // 0. Normalizar preguntas (orden fijo)
+    // Normalizar preguntas
     const normalizedQuestions = [...questions].sort((a, b) => a - b);
 
-    // 1. Buscar exámenes existentes del mismo contexto
+    // Buscar exámenes existentes del mismo contexto
     const existingExams = await tx.exam.findMany({
       where: {
         subject_id: dto.subject_id,
@@ -32,7 +44,7 @@ async create(
       },
     });
 
-    // 2. Verificar duplicado exacto
+    // VALIDACIÓN 2: evitar exámenes duplicados
     for (const existingExam of existingExams) {
       const existingQuestions = existingExam.exam_questions
         .map(q => q.question_id)
@@ -48,11 +60,13 @@ async create(
         console.log(
           `Examen duplicado detectado. Coincide con el examen ID ${existingExam.id}`,
         );
-        throw new Error('Examen duplicado: mismo conjunto de preguntas');
+        throw new BadRequestException(
+          'Examen duplicado: mismo conjunto de preguntas',
+        );
       }
     }
 
-    // 3. Crear examen
+    // Crear examen
     const exam = await tx.exam.create({
       data: {
         name: dto.name,
@@ -65,18 +79,16 @@ async create(
       },
     });
 
-    // 4. Crear relaciones exam_question
-    if (normalizedQuestions.length > 0) {
-      await tx.exam_Question.createMany({
-        data: normalizedQuestions.map((id) => ({
-          exam_id: exam.id,
-          question_id: id,
-        })),
-        skipDuplicates: true,
-      });
-    }
+    // Crear relaciones exam_question
+    await tx.exam_Question.createMany({
+      data: normalizedQuestions.map((id) => ({
+        exam_id: exam.id,
+        question_id: id,
+      })),
+      skipDuplicates: true,
+    });
 
-    // 5. Retornar examen completo
+    // Retornar examen completo
     return tx.exam.findUnique({
       where: { id: exam.id },
       include: {

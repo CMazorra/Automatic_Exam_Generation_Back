@@ -102,9 +102,11 @@ export async function seed_subjects_questions(prisma: PrismaClient) {
   // Parámetros
   await prisma.parameters.createMany({
     data: [
-      { proportion: '50% teoría - 50% práctica', amount_quest: '10', quest_topics: 'Mixto' },
-      { proportion: '70% práctica - 30% teoría', amount_quest: '8', quest_topics: 'Problemas' },
-      { proportion: '100% teórico', amount_quest: '5', quest_topics: 'Conceptos' },
+      { proportion: '20-VoF,30-Argumentación,50-Opción Múltiple', amount_quest: '10', quest_topics: 'Matemáticas' },
+      { proportion: '20-VoF,30-Argumentación,50-Opción Múltiple', amount_quest: '10', quest_topics: 'Física' },
+      { proportion: '20-VoF,30-Argumentación,50-Opción Múltiple', amount_quest: '5', quest_topics: 'Química' },
+      { proportion: '20-VoF,40-Argumentación,40-Opción Múltiple', amount_quest: '5', quest_topics: 'Historia' },
+      { proportion: '20-VoF,30-Argumentación,50-Opción Múltiple', amount_quest: '10', quest_topics: 'Biología' },
     ],
   });
 

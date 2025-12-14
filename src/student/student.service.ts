@@ -47,6 +47,24 @@ export class StudentService {
     return this.prisma.student.update({where: {id}, data:{ user:{ update:{isActive:true}}}});
   }
 
+  async enrollStudentInSubject(studentId: number, subjectId: number) {
+  return this.prisma.student.update({
+    where: {
+      id: studentId,
+    },
+    data: {
+      subjects: {
+        connect: {
+          id: subjectId,
+        },
+      },
+    },
+    include: {
+      subjects: true,
+    },
+  });
+}
+
   async getStudentSubjects(studentId: number) {
   return this.prisma.student.findUnique({
     where: { id: studentId },

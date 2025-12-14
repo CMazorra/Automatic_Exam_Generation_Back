@@ -1700,6 +1700,37 @@
         ]
       }
     },
+    "/app/student/{id}/subjects/{subjectId}": {
+      "post": {
+        "operationId": "StudentController_enrollStudentInSubject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Student"
+        ]
+      }
+    },
     "/app/head-teacher": {
       "post": {
         "operationId": "HeadTeacherController_create",

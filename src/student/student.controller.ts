@@ -85,4 +85,11 @@ export class StudentController {
   findOne(@Param('id') id: string) {
     return this.studentService.findOne(+id);
   }
+
+    // Matricular un estudiante en una asignatura
+  @Post(':id/subjects/:subjectId')
+  enrollStudentInSubject(@Param('id') id: string,@Param('subjectId') subjectId: string, ) {
+    return this.studentService.enrollStudentInSubject(Number(id),Number(subjectId),);
+  }
+
 }

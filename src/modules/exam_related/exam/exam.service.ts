@@ -18,7 +18,6 @@ async create(
   dto: CreateExamDto,
   questions: number[] = [],
 ) {
-
   // VALIDACIÓN 1: no permitir exámenes sin preguntas
   if (!questions || questions.length === 0) {
     throw new BadRequestException(
@@ -57,13 +56,67 @@ async create(
         );
 
       if (isDuplicate) {
-        console.log(
-          `Examen duplicado detectado. Coincide con el examen ID ${existingExam.id}`,
-        );
         throw new BadRequestException(
           'Examen duplicado: mismo conjunto de preguntas',
         );
       }
+    }
+
+    // Obtener información completa de las preguntas
+    const dbQuestions = await tx.question.findMany({
+      where: {
+        id: { in: normalizedQuestions },
+      },
+      select: {
+        type: true,
+        topic_id: true,
+      },
+    });
+
+    const totalQuestions = dbQuestions.length;
+
+    // Calcular proporciones por tipo
+    const typeCount: Record<string, number> = {};
+    for (const q of dbQuestions) {
+      typeCount[q.type] = (typeCount[q.type] || 0) + 1;
+    }
+
+    const proportion = Object.entries(typeCount)
+      .map(([type, count]) => {
+        const percent = Math.round((count / totalQuestions) * 100);
+        return `${type}:${percent}`;
+      })
+      .sort()
+      .join('|');
+
+    // Calcular cantidad de preguntas
+    const amount_quest = `TOTAL:${totalQuestions}`;
+
+    // Calcular topics involucrados
+    const quest_topics = Array.from(
+      new Set(dbQuestions.map(q => q.topic_id)),
+    )
+      .sort((a, b) => a - b)
+      .join(',');
+
+    // Buscar parámetros existentes
+    let parameters = await tx.parameters.findFirst({
+      where: {
+        proportion,
+        amount_quest,
+        quest_topics,
+      },
+    });
+
+    // Crear parámetros si no existen
+    if (!parameters) {
+      parameters = await tx.parameters.create({
+        data: {
+          proportion,
+          amount_quest,
+          quest_topics,
+        },
+      });
     }
 
     // Crear examen
@@ -74,8 +127,8 @@ async create(
         difficulty: dto.difficulty,
         subject_id: dto.subject_id,
         teacher_id: dto.teacher_id,
-        parameters_id: dto.parameters_id,
         head_teacher_id: dto.head_teacher_id,
+        parameters_id: parameters.id,
       },
     });
 
@@ -92,6 +145,7 @@ async create(
     return tx.exam.findUnique({
       where: { id: exam.id },
       include: {
+        parameters: true,
         exam_questions: {
           include: { question: true },
         },

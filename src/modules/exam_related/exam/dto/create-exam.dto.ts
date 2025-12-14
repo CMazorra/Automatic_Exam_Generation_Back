@@ -21,9 +21,5 @@ export class CreateExamDto {
 
     @Type(() => Number)
     @IsInt()
-    parameters_id: number;
-
-    @Type(() => Number)
-    @IsInt()
     head_teacher_id: number;
 }

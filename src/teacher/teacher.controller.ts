@@ -71,8 +71,6 @@ export class TeacherController {
   getSubjects(@Param('id') id: string) {
     return this.teacherService.getSubjectsByTeacher(Number(id));
   }
-
-  
   
   @Get(':id')
   @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)

@@ -550,26 +550,30 @@ export async function seed_subjects_questions(prisma) {
     'Biología Celular',
   ];
 
-  const createdSubjects: Subject[] = [];
+/* =========================
+   4️⃣ SUBJECTS
+========================= */
+const createdSubjects: Subject[] = [];
 
-  for (let i = 0; i < subjectNames.length; i++) {
-    const subject = await prisma.subject.create({
-      data: {
-        name: subjectNames[i],
-        program: 'Ingeniería',
-        head_teacher_id: headTeachers[i % headTeachers.length].id,
-        teachers: {
-          connect: [
-            { id: teachers[i % teachers.length].id },
-            { id: teachers[(i + 1) % teachers.length].id },
-            { id: teachers[(i + 2) % teachers.length].id },
-          ],
-        },
+for (let i = 0; i < subjectNames.length; i++) {
+  const subject = await prisma.subject.create({
+    data: {
+      name: subjectNames[i],
+      program: 'Ingeniería',
+      head_teacher_id: headTeachers[i % headTeachers.length].id,
+      teachers: {
+        connect: [
+          { id: teachers[i * 3].id },
+          { id: teachers[i * 3 + 1].id },
+          { id: teachers[i * 3 + 2].id },
+        ],
       },
-    });
+    },
+  });
 
-    createdSubjects.push(subject);
-  }
+  createdSubjects.push(subject);
+}
+
 
   console.log('✅ Subjects creados');
 

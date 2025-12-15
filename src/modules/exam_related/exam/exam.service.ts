@@ -93,7 +93,7 @@ const dbQuestions = await tx.question.findMany({
       .join(',');
 
     // Calcular cantidad de preguntas
-    const amount_quest = `TOTAL:${totalQuestions}`;
+    const amount_quest = `${totalQuestions}`;
 
     // Calcular topics involucrados
 const quest_topics = Array.from(
@@ -213,8 +213,8 @@ async generated(data: GenerateExamDto) {
     })
     .join(',');
 
-  const amountQuest = `TOTAL:${totalQuestions}`;
-  const questTopics = 'Mixto'; // por ahora fijo
+  const amountQuest = `${totalQuestions}`;
+  const questTopics = 'Mixto'; 
 
   let parameters = await this.prisma.parameters.findFirst({
     where: {

@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserRequestDto } from './dto/create-user-request.dto';
+import { RequireStudentOwner } from '../auth/require-student-owner.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -15,8 +17,8 @@ export class UserController {
 
   @Post()
   @Roles(Role.ADMIN)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body() body: CreateUserRequestDto) {
+    return this.userService.create(body.user, body.teacher);
   }
 
   @Get('all')

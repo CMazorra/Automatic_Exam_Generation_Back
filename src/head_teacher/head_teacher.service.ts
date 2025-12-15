@@ -8,6 +8,11 @@ export class HeadTeacherService {
   constructor(private readonly prisma: PrismaService){}
   
   async create(data: CreateHeadTeacherDto) {
+    const teacher = await this.prisma.teacher.findUnique({where: {id: data.id}});
+    if (!teacher || teacher.isHeadTeacher) {
+      throw new Error('Teacher not found or is already a head teacher');
+    }
+    await this.prisma.teacher.update({where: {id: data.id}, data:{isHeadTeacher: true}});
     return this.prisma.head_Teacher.create({data});
   }
 

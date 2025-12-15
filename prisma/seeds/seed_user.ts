@@ -8,13 +8,11 @@ import { Role } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import 'dotenv/config';
 
-export async function seed_users(prisma: PrismaService) {
+export async function seed_users(prisma: PrismaService, studentService: StudentService, teacherService: TeacherService) {
   console.log('🌱 Seed: Users');
 
   const jwt = new JwtService({ secret: 'clave_de_prueba' }); // aunque no se use, no molesta
-  const userService = new UserService(prisma);
-  const studentService = new StudentService(prisma);
-  const teacherService = new TeacherService(prisma);
+  const userService = new UserService(prisma,studentService,teacherService);
   const headTeacherService = new HeadTeacherService(prisma);
 
   const users: CreateUserDto[] = [

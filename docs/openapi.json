@@ -1039,7 +1039,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/CreateUserRequestDto"
               }
             }
           }
@@ -1235,237 +1235,6 @@
         },
         "tags": [
           "User"
-        ]
-      }
-    },
-    "/app/teacher": {
-      "post": {
-        "operationId": "TeacherController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTeacherDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      },
-      "get": {
-        "operationId": "TeacherController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/all": {
-      "get": {
-        "operationId": "TeacherController_findAllAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/deleted": {
-      "get": {
-        "operationId": "TeacherController_findAllDeleted",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/all/{id}": {
-      "get": {
-        "operationId": "TeacherController_findOneAll",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/deleted/{id}": {
-      "get": {
-        "operationId": "TeacherController_findOneDeleted",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/{id}": {
-      "patch": {
-        "operationId": "TeacherController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTeacherDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      },
-      "delete": {
-        "operationId": "TeacherController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      },
-      "get": {
-        "operationId": "TeacherController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/restore/{id}": {
-      "patch": {
-        "operationId": "TeacherController_restore",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
-        ]
-      }
-    },
-    "/app/teacher/{id}/subjects": {
-      "get": {
-        "operationId": "TeacherController_getSubjects",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Teacher"
         ]
       }
     },
@@ -1728,6 +1497,237 @@
         },
         "tags": [
           "Student"
+        ]
+      }
+    },
+    "/app/teacher": {
+      "post": {
+        "operationId": "TeacherController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "get": {
+        "operationId": "TeacherController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/all": {
+      "get": {
+        "operationId": "TeacherController_findAllAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/deleted": {
+      "get": {
+        "operationId": "TeacherController_findAllDeleted",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/all/{id}": {
+      "get": {
+        "operationId": "TeacherController_findOneAll",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/deleted/{id}": {
+      "get": {
+        "operationId": "TeacherController_findOneDeleted",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/{id}": {
+      "patch": {
+        "operationId": "TeacherController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "delete": {
+        "operationId": "TeacherController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      },
+      "get": {
+        "operationId": "TeacherController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/restore/{id}": {
+      "patch": {
+        "operationId": "TeacherController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
+        ]
+      }
+    },
+    "/app/teacher/{id}/subjects": {
+      "get": {
+        "operationId": "TeacherController_getSubjects",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teacher"
         ]
       }
     },
@@ -2783,19 +2783,11 @@
         "type": "object",
         "properties": {}
       },
-      "CreateUserDto": {
+      "CreateUserRequestDto": {
         "type": "object",
         "properties": {}
       },
       "UpdateUserDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateTeacherDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateTeacherDto": {
         "type": "object",
         "properties": {}
       },
@@ -2804,6 +2796,14 @@
         "properties": {}
       },
       "UpdateStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTeacherDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTeacherDto": {
         "type": "object",
         "properties": {}
       },

@@ -5,18 +5,34 @@ import { PrismaService } from '../prisma/prisma.service';
 describe('HeadTeacherService', () => {
   let service: HeadTeacherService;
 
-  const prismaMock = {
-    head_Teacher: {
-      create: jest.fn(),
-      findMany: jest.fn(),
-      findFirst: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
-    teacher: {
-      update: jest.fn(),
-    },
+  type PrismaMock = {
+  head_Teacher: {
+    create: jest.Mock;
+    findMany: jest.Mock;
+    findFirst: jest.Mock;
+    findUnique: jest.Mock;
+    update: jest.Mock;
   };
+  teacher: {
+    findUnique: jest.Mock;
+    update: jest.Mock;
+  };
+};
+
+const prismaMock: PrismaMock = {
+  head_Teacher: {
+    create: jest.fn(),
+    findMany: jest.fn(),
+    findFirst: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+  },
+  teacher: {
+    findUnique: jest.fn(),
+    update: jest.fn(),
+  },
+};
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,12 +56,21 @@ describe('HeadTeacherService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a head teacher', async () => {
-    const dto = { teacherId: 1 };
-    prismaMock.head_Teacher.create.mockResolvedValue(dto);
+  it('should create a head teacher when teacher exists and is not head', async () => {
+    const dto = { id: 1 }; // CreateHeadTeacherDto
+    const teacherRecord = { id: 1, isHeadTeacher: false };
+
+    (prismaMock.teacher.findUnique as jest.Mock).mockResolvedValue(teacherRecord);
+    (prismaMock.teacher.update as jest.Mock).mockResolvedValue({ ...teacherRecord, isHeadTeacher: true });
+    (prismaMock.head_Teacher.create as jest.Mock).mockResolvedValue(dto);
 
     const result = await service.create(dto as any);
 
+    expect(prismaMock.teacher.findUnique).toHaveBeenCalledWith({ where: { id: dto.id } });
+    expect(prismaMock.teacher.update).toHaveBeenCalledWith({
+      where: { id: dto.id },
+      data: { isHeadTeacher: true },
+    });
     expect(prismaMock.head_Teacher.create).toHaveBeenCalledWith({ data: dto });
     expect(result).toEqual(dto);
   });

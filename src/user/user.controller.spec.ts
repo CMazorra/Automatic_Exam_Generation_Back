@@ -3,26 +3,40 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { Role } from '@prisma/client';
 
 describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
 
-  const mockUserService = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-    findAllAll: jest.fn(),
-    findAllDelete: jest.fn(),
-    findOne: jest.fn(),
-    findOneAll: jest.fn(),
-    findOneDelete: jest.fn(),
-    update: jest.fn(),
-    remove: jest.fn(),
-    restore: jest.fn(),
-  };
-
+  
+let mockUserService: {
+  create: jest.Mock;
+  findAll: jest.Mock;
+  findAllAll: jest.Mock;
+  findAllDelete: jest.Mock;
+  findOne: jest.Mock;
+  findOneAll: jest.Mock;
+  findOneDelete: jest.Mock;
+  update: jest.Mock;
+  remove: jest.Mock;
+  restore: jest.Mock;
+};
   beforeEach(async () => {
+    mockUserService = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findAllAll: jest.fn(),
+      findAllDelete: jest.fn(),
+      findOne: jest.fn(),
+      findOneAll: jest.fn(),
+      findOneDelete: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
+      restore: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
@@ -45,8 +59,8 @@ describe('UserController', () => {
   // ----------------------------
   // create
   // ----------------------------
-  it('should call userService.create', async () => {
-    const dto: CreateUserDto = {
+  it('should call userService.create without teacher', async () => {
+    const userDto: CreateUserDto = {
       name: 'John',
       password: '1234',
       account: 'john123',
@@ -54,16 +68,47 @@ describe('UserController', () => {
       course: 'Math',
       role: Role.STUDENT,
     };
-    const result = { ...dto, id_us: 1 };
+    const dto: CreateUserRequestDto = { user: userDto };
+    const result = { ...userDto, id_us: 1 };
     mockUserService.create.mockResolvedValue(result);
 
     expect(await controller.create(dto)).toEqual(result);
-    expect(mockUserService.create).toHaveBeenCalledWith(dto);
+    expect(mockUserService.create).toHaveBeenCalledWith(userDto, undefined);
+  });
+
+  it('should call userService.create with teacher', async () => {
+    const dto: CreateUserRequestDto = {
+      user: {
+        name: 'Jane',
+        password: '1234',
+        account: 'jane123',
+        age: 30,
+        course: 'Math',
+        role: Role.TEACHER,
+      },
+      teacher: {
+        specialty: 'Math',
+        isHeadTeacher: true,
+      },
+    };
+    const result = { ...dto.user, id_us: 2 };
+    mockUserService.create.mockResolvedValue(result);
+
+    expect(await controller.create(dto)).toEqual(result);
+    expect(mockUserService.create).toHaveBeenCalledWith(dto.user, dto.teacher);
   });
 
   // ----------------------------
   // findAll variants
   // ----------------------------
+  it('should call userService.findAll', async () => {
+    const result = [{ id_us: 1, name: 'John', isActive: true }];
+    mockUserService.findAll.mockResolvedValue(result);
+
+    expect(await controller.findAllActive()).toEqual(result);
+    expect(mockUserService.findAll).toHaveBeenCalled();
+  });
+
   it('should call userService.findAllAll', async () => {
     const result = [{ id_us: 1, name: 'John' }];
     mockUserService.findAllAll.mockResolvedValue(result);
@@ -80,17 +125,17 @@ describe('UserController', () => {
     expect(mockUserService.findAllDelete).toHaveBeenCalled();
   });
 
-  it('should call userService.findAllActive', async () => {
-    const result = [{ id_us: 1, name: 'John', isActive: true }];
-    mockUserService.findAll.mockResolvedValue(result);
-
-    expect(await controller.findAllActive()).toEqual(result);
-    expect(mockUserService.findAll).toHaveBeenCalled();
-  });
-
   // ----------------------------
   // findOne variants
   // ----------------------------
+  it('should call userService.findOne', async () => {
+    const result = { id_us: 1, name: 'John', isActive: true };
+    mockUserService.findOne.mockResolvedValue(result);
+
+    expect(await controller.findOne('1')).toEqual(result);
+    expect(mockUserService.findOne).toHaveBeenCalledWith(1);
+  });
+
   it('should call userService.findOneAll', async () => {
     const result = { id_us: 1, name: 'John' };
     mockUserService.findOneAll.mockResolvedValue(result);
@@ -105,14 +150,6 @@ describe('UserController', () => {
 
     expect(await controller.findOneDelete('1')).toEqual(result);
     expect(mockUserService.findOneDelete).toHaveBeenCalledWith(1);
-  });
-
-  it('should call userService.findOne', async () => {
-    const result = { id_us: 1, name: 'John', isActive: true };
-    mockUserService.findOne.mockResolvedValue(result);
-
-    expect(await controller.findOne('1')).toEqual(result);
-    expect(mockUserService.findOne).toHaveBeenCalledWith(1);
   });
 
   // ----------------------------

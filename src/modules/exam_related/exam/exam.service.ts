@@ -199,11 +199,18 @@ async generated(data: GenerateExamDto) {
       'La distribución de preguntas no puede estar vacía',
     );
   }
+  
+  const TYPE_LABELS: Record<string, string> = {
+  TRUE_FALSE: 'VoF',
+  ARGUMENTATION: 'Argumentación',
+  MULTIPLE_CHOICE: 'Selección múltiple',
+  };
 
   const proportion = data.questionDistribution
     .map(d => {
       const percent = Math.round((d.amount / totalQuestions) * 100);
-      return `${d.type}:${percent}%`;
+      const label = TYPE_LABELS[d.type] ?? d.type;
+      return `${percent}-${label}`;
     })
     .join('|');
 

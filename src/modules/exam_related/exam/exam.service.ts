@@ -164,172 +164,94 @@ const quest_topics = Array.from(
 }
 
 async generated(data: GenerateExamDto) {
-
-  // =========================
-  // Helpers
-  // =========================
-
-  function combinations<T>(arr: T[], k: number): T[][] {
-    if (k === 0) return [[]];
-    if (arr.length === 0) return [];
-
-    const [first, ...rest] = arr;
-
-    const withFirst = combinations(rest, k - 1).map(c => [first, ...c]);
-    const withoutFirst = combinations(rest, k);
-
-    return [...withFirst, ...withoutFirst];
-  }
-
-  function cartesian<T>(arrays: T[][][]): T[][] {
-    return arrays.reduce(
-      (acc, curr) => acc.flatMap(a => curr.map(c => [...a, ...c])),
-      [[]] as T[][]
-    );
-  }
-
-  // =========================
-  // 0️⃣ Obtener examen + parámetros
-  // =========================
-
-  const exam = await this.prisma.exam.findUnique({
-    where: { id: data.exam_id },
-    include: { parameters: true },
-  });
-
-  if (!exam || !exam.parameters) {
-    throw new BadRequestException(
-      'El examen no tiene una parametrización asociada',
-    );
-  }
-
-  // Extraer temas desde Parameters
-  const topics = exam.parameters.quest_topics
-    .split(',')
-    .map(t => t.trim());
-
-  if (topics.length === 0) {
-    throw new BadRequestException(
-      'La parametrización no contiene temas válidos',
-    );
-  }
-
-  // =========================
-  // 1️⃣ Obtener sub_topic_ids de los temas
-  // =========================
-
-  const subTopics = await this.prisma.sub_Topic.findMany({
-    where: {
-      topic: {
-        name: { in: topics },
-      },
-    },
-    select: { id: true },
-  });
-
-  const subTopicIds = subTopics.map(st => st.id);
-
-  if (subTopicIds.length === 0) {
-    throw new BadRequestException(
-      'No se encontraron subtemas asociados a los temas de la parametrización',
-    );
-  }
-
-  // =========================
-  // 2️⃣ Para cada tipo → pool filtrado por sub_topic_ids
-  // =========================
-  let typeCombos: Question[][][] = [];
-
-  for (const dist of data.questionDistribution) {
-    const { type, amount } = dist;
-
-    const available = await this.prisma.question.findMany({
-      where: {
-        subject_id: data.subject_id,
-        type: type,
-        teacher_id: data.teacher_id,
-        sub_topic_id: { in: subTopicIds },
-      },
-    });
-
-    if (available.length < amount) {
-      throw new NotFoundException(
-        `No hay suficientes preguntas del tipo "${type}" para los temas [${topics.join(
-          ', ',
-        )}]. (Hay ${available.length}, se necesitan ${amount})`,
-      );
+    // Helper: generar combinaciones
+    function combinations<T>(arr: T[], k: number): T[][] {
+        if (k === 0) return [[]];
+        if (arr.length === 0) return [];
+        const [first, ...rest] = arr;
+        const withFirst = combinations(rest, k - 1).map(c => [first, ...c]);
+        const withoutFirst = combinations(rest, k);
+        return [...withFirst, ...withoutFirst];
     }
 
-    const combos = combinations(available, amount);
-    typeCombos.push(combos);
-  }
+    // Helper: producto cartesiano
+    function cartesian<T>(arrays: T[][][]): T[][] {
+        return arrays.reduce((acc, curr) =>
+            acc.flatMap(a => curr.map(c => [...a, ...c])),
+            [[]]
+        );
+    }
 
-  // =========================
-  // 3️⃣ Generar combinaciones completas
-  // =========================
+    let typeCombos: Question[][][] = [];
 
-  const allPossibleExams = cartesian(typeCombos);
+    // 1️⃣ Para cada tipo → obtener TODAS las combinaciones
+    for (const dist of data.questionDistribution) {
+        const { type, amount } = dist;
+        const available = await this.prisma.question.findMany({
+            where: {
+                subject_id: data.subject_id,
+                type: type
+            },
+        });
 
-  if (allPossibleExams.length === 0) {
+        if (available.length < amount) {
+            throw new NotFoundException(
+                `No hay suficientes preguntas del tipo "${type}". (Hay ${available.length}, se necesitan ${amount})`
+            );
+        }
+
+        const combos = combinations(available, amount); // TODAS las combinaciones
+        typeCombos.push(combos);
+    }
+
+    // 2️⃣ Generar TODAS las combinaciones completas de examen
+    const allPossibleExams = cartesian(typeCombos);
+
+    if (allPossibleExams.length === 0) {
+        throw new BadRequestException("No existen combinaciones posibles para generar un examen.");
+    }
+
+    // 3️⃣ Buscar la PRIMERA combinación que no exista en DB (para EL EXAMEN dado)
+    for (const candidate of allPossibleExams) {
+        const candidateIds = candidate.map(q => q.id).sort();
+
+        // Verificar si YA existen EXACTAMENTE esas preguntas EN ESTE EXAMEN
+        const exists = await this.prisma.exam_Question.findMany({
+            where: { exam_id: data.exam_id },
+            select: { question_id: true }
+        });
+
+        const existingIds = exists.map(e => e.question_id).sort();
+
+        // Si coincide 100% → ES repetido
+        if (
+            existingIds.length === candidateIds.length &&
+            existingIds.every((id, i) => id === candidateIds[i])
+        ) {
+            continue; // seguir buscando otra combinación
+        }
+
+        // 4️⃣ Insertar las preguntas en exam_question
+        await this.prisma.exam_Question.createMany({
+            data: candidateIds.map(id => ({
+                exam_id: data.exam_id,
+                question_id: id,
+            }))
+        });
+
+        // Retornar la lista generada
+        return {
+            exam_id: data.exam_id,
+            questions_added: candidateIds.length,
+            inserted_questions: candidateIds
+        };
+    }
+
+    // 5️⃣ Si todas las combinaciones ya existen → imposible generar uno nuevo
     throw new BadRequestException(
-      'No existen combinaciones posibles para generar el examen',
+        "No es posible generar una nueva combinación. Todas las combinaciones posibles ya existen para este examen."
     );
-  }
-
-  // =========================
-  // 4️⃣ Preguntas ya existentes en este examen
-  // =========================
-
-  const existing = await this.prisma.exam_Question.findMany({
-    where: { exam_id: data.exam_id },
-    select: { question_id: true },
-  });
-
-  const existingIds = existing.map(e => e.question_id).sort((a, b) => a - b);
-
-  // =========================
-  // 5️⃣ Buscar combinación nueva
-  // =========================
-
-  for (const candidate of allPossibleExams) {
-
-    const candidateIds = candidate.map(q => q.id).sort((a, b) => a - b);
-
-    const isDuplicate =
-      existingIds.length === candidateIds.length &&
-      existingIds.every((id, i) => id === candidateIds[i]);
-
-    if (isDuplicate) continue;
-
-    // =========================
-    // 6️⃣ Insertar preguntas
-    // =========================
-
-    await this.prisma.exam_Question.createMany({
-      data: candidateIds.map(id => ({
-        exam_id: data.exam_id,
-        question_id: id,
-      })),
-    });
-
-    return {
-      exam_id: data.exam_id,
-      parameters_used: exam.parameters.id,
-      topics_used: topics,
-      questions_added: candidateIds.length,
-      inserted_questions: candidateIds,
-    };
-  }
-
-  // =========================
-  // 7️⃣ Sin combinaciones nuevas
-  // =========================
-
-  throw new BadRequestException(
-    'No es posible generar una nueva combinación. Todas las combinaciones posibles ya existen para este examen.',
-  );
 }
-
 
 
 

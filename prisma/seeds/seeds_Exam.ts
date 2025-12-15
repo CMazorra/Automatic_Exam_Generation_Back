@@ -90,7 +90,7 @@ export async function seed_exams(prisma: PrismaClient) {
     await prisma.exam.update({
     where: { id: exam.id },
     data: {
-      status: 'Aprobado',
+      status: 'Asigando',
     },
   });
 }

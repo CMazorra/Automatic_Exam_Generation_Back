@@ -543,9 +543,9 @@ export async function seed_subjects_questions(prisma) {
      4️⃣ SUBJECTS
   ========================= */
   const subjectNames = [
-    'Matemáticas',
-    'Física',
-    'Química',
+    'Álgebra Lineal',
+    'Física Cuántica',
+    'Química Orgánica',
     'Historia Mundial',
     'Biología Celular',
   ];
@@ -580,13 +580,13 @@ export async function seed_subjects_questions(prisma) {
     let relatedTopics: Topic[] = [];
 
     switch (subj.name) {
-      case 'Matemáticas':
+      case 'Álgebra Lineal':
         relatedTopics = topics.filter(t => t.name === 'Matemáticas');
         break;
-      case 'Física':
+      case 'Física Cuántica':
         relatedTopics = topics.filter(t => ['Matemáticas', 'Física'].includes(t.name));
         break;
-      case 'Química':
+      case 'Química Orgánica':
         relatedTopics = topics.filter(t => ['Matemáticas', 'Física', 'Química'].includes(t.name));
         break;
       case 'Historia Mundial':
@@ -922,7 +922,7 @@ console.log('✅ Asignación aleatoria completada.');
   const teachersForSubj = relatedTopics.teachers;
 
   if (!teachersForSubj.length) {
-    console.warn("⚠️ La materia ${subj.name} no tiene docentes asignados");
+    console.warn(`⚠️ La materia ${subj.name} no tiene docentes asignados`);
     continue;
   }
   // Obtener subtopics relacionados
@@ -963,7 +963,7 @@ console.log('✅ Asignación aleatoria completada.');
   );
 
   // 3️⃣ Nombre del subtema según dificultad
-  const subtopicName = ${mainTopicName} ${difficultyMap[q.diff]};
+  const subtopicName = `${mainTopicName} ${difficultyMap[q.diff]}`;
 
   // 4️⃣ Buscar subtema
   let sub = subtopicsForTopic.find(st => st.name === subtopicName);
@@ -971,7 +971,7 @@ console.log('✅ Asignación aleatoria completada.');
   // 5️⃣ Si no existe, elegir aleatorio solo dentro del topic
   if (!sub) {
     sub = subtopicsForTopic[Math.floor(Math.random() * subtopicsForTopic.length)];
-    console.warn(⚠️ No se encontró subtema exacto para ${subtopicName}, se asigna uno aleatorio de ${mainTopicName});
+    console.warn(`⚠️ No se encontró subtema exacto para ${subtopicName}, se asigna uno aleatorio de ${mainTopicName}`);
   }
 
   const randomTeacher = teachersForSubj[Math.floor(Math.random() * teachersForSubj.length)];

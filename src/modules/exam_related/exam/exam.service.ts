@@ -87,10 +87,10 @@ const dbQuestions = await tx.question.findMany({
     const proportion = Object.entries(typeCount)
       .map(([type, count]) => {
         const percent = Math.round((count / totalQuestions) * 100);
-        return `${type}:${percent}`;
+        return `${percent}-${type}`;
       })
       .sort()
-      .join('|');
+      .join(',');
 
     // Calcular cantidad de preguntas
     const amount_quest = `TOTAL:${totalQuestions}`;
@@ -211,7 +211,7 @@ async generated(data: GenerateExamDto) {
       const label = TYPE_LABELS[d.type] ?? d.type;
       return `${percent}-${label}`;
     })
-    .join('|');
+    .join(',');
 
   const amountQuest = `TOTAL:${totalQuestions}`;
   const questTopics = 'Mixto'; // por ahora fijo

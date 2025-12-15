@@ -876,52 +876,119 @@ export async function seed_subjects_questions(prisma) {
   ],
 };
 
-  const difficultyMap = {
+console.log('👨‍🎓 Asignando asignaturas aleatorias a los estudiantes...');
+
+const students = await prisma.student.findMany();
+for (const student of students) {
+  // Número aleatorio de materias (3–5)
+  const numSubjects = Math.floor(Math.random() * 3) + 3;
+
+  // Selecciona asignaturas aleatorias
+  const randomSubjects = [...createdSubjects]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, numSubjects);
+
+  // Actualiza la relación muchos a muchos
+  await prisma.student.update({
+    where: { id: student.id },
+    data: {
+      subjects: {
+        connect: randomSubjects.map((s) => ({ id: s.id })),
+      },
+    },
+  });
+
+  console.log(
+    `→ ${student.id} recibió ${numSubjects} asignatura(s): ${randomSubjects
+      .map((s) => s.name)
+      .join(', ')}`
+  );
+}
+
+console.log('✅ Asignación aleatoria completada.');
+  for (const subj of createdSubjects) {
+  const bank = questionBank[subj.name] ?? [];
+
+  // Obtener los topics ya conectados a este subject
+  const relatedTopics = await prisma.subject
+    .findUnique({
+      where: { id: subj.id },
+      select: { topics: true, teachers:true },
+    })
+    .then(s => s?? {topics:[], teachers:[]});
+
+  // Obtener subtopics relacionados
+  const topicsForSubj = relatedTopics.topics;
+  const teachersForSubj = relatedTopics.teachers;
+
+  if (!teachersForSubj.length) {
+    console.warn("⚠️ La materia ${subj.name} no tiene docentes asignados");
+    continue;
+  }
+  // Obtener subtopics relacionados
+  const relatedSubTopics = subTopics.filter(st =>
+    topicsForSubj.some(t => t.id === st.topic_id)
+  );
+  const difficultyMap: Record<string, string> = {
     'Fácil': 'Intro',
     'Medio': 'Medio',
     'Difícil': 'Avanzado',
   };
-
-  for (const subj of createdSubjects) {
-    const bank = questionBank[subj.name] ?? [];
-
-    const fullSubj = await prisma.subject.findUnique({
-      where: { id: subj.id },
-      include: { topics: true, teachers: true },
-    });
-
-    if (!fullSubj || !fullSubj.teachers.length) continue;
-
-    const relatedSubTopics = subTopics.filter(st =>
-      fullSubj.topics.some(t => t.id === st.topic_id)
-    );
-
-    if (!relatedSubTopics.length) continue;
-
-    for (const q of bank) {
-      const mainTopic = fullSubj.topics[0];
-      const subName = `${mainTopic.name} ${difficultyMap[q.diff]}`;
-
-      let sub = relatedSubTopics.find(st => st.name === subName);
-      if (!sub) sub = relatedSubTopics[0];
-
-      const teacher = fullSubj.teachers[Math.floor(Math.random() * fullSubj.teachers.length)];
-
-      await prisma.question.create({
-        data: {
-          question_text: q.text,
-          difficulty: q.diff,
-          answer: q.ans,
-          type: q.type,
-          score: q.score,
-          subject_id: subj.id,
-          topic_id: mainTopic.id,
-          sub_topic_id: sub.id,
-          teacher_id: teacher.id,
-        },
-      });
-    }
+  for (const q of bank) {
+  // 1️⃣ Topic principal de la asignatura
+  let mainTopicName: string;
+  switch (subj.name) {
+    case 'Álgebra Lineal':
+      mainTopicName = 'Matemáticas';
+      break;
+    case 'Física Cuántica':
+      mainTopicName = 'Física';
+      break;
+    case 'Química Orgánica':
+      mainTopicName = 'Química';
+      break;
+    case 'Historia Mundial':
+      mainTopicName = 'Historia';
+      break;
+    case 'Biología Celular':
+      mainTopicName = 'Biología';
+      break;
+    default:
+      mainTopicName = 'General';
   }
 
-  console.log('🎉 Seed Subjects & Questions COMPLETO');
+  // 2️⃣ Subtopics del topic principal
+  const subtopicsForTopic = relatedSubTopics.filter(st => 
+    topicsForSubj.some(t => t.name === mainTopicName && t.id === st.topic_id)
+  );
+
+  // 3️⃣ Nombre del subtema según dificultad
+  const subtopicName = ${mainTopicName} ${difficultyMap[q.diff]};
+
+  // 4️⃣ Buscar subtema
+  let sub = subtopicsForTopic.find(st => st.name === subtopicName);
+
+  // 5️⃣ Si no existe, elegir aleatorio solo dentro del topic
+  if (!sub) {
+    sub = subtopicsForTopic[Math.floor(Math.random() * subtopicsForTopic.length)];
+    console.warn(⚠️ No se encontró subtema exacto para ${subtopicName}, se asigna uno aleatorio de ${mainTopicName});
+  }
+
+  const randomTeacher = teachersForSubj[Math.floor(Math.random() * teachersForSubj.length)];
+
+  // 6️⃣ Crear pregunta
+  await prisma.question.create({
+    data: {
+      question_text: q.text,
+      difficulty: q.diff,
+      answer: q.ans,
+      type: q.type,
+      score: q.score,
+      subject_id: subj.id,
+      topic_id: sub.topic_id,
+      sub_topic_id: sub.id,
+      teacher_id: randomTeacher.id,
+    },
+  });
+}}
 }

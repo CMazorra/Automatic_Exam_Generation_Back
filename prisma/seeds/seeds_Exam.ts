@@ -22,11 +22,11 @@ export async function seed_exams(prisma: PrismaClient) {
 
   // Crear varios exámenes
   const examsData = [
-    { name: 'Examen Matemáticas 1', status: 'Pendiente', difficulty: 'medio' },
-    { name: 'Examen Física 1', status: 'Pendiente', difficulty: 'dificil' },
-    { name: 'Examen Química 1', status: 'Pendiente', difficulty: 'facil' },
-    { name: 'Examen Historia 1', status: 'Pendiente', difficulty: 'medio' },
-    { name: 'Examen Biología 1', status: 'Pendiente', difficulty: 'facil' },
+    { name: 'Examen Matemáticas 1', status: 'Asignado', difficulty: 'medio' },
+    { name: 'Examen Física 1', status: 'Asignado', difficulty: 'dificil' },
+    { name: 'Examen Química 1', status: 'Asignado', difficulty: 'facil' },
+    { name: 'Examen Historia 1', status: 'Asignado', difficulty: 'medio' },
+    { name: 'Examen Biología 1', status: 'Asignado', difficulty: 'facil' },
   ];
 
   const createdExams: Exam[] = [];

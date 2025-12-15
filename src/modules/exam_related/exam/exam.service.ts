@@ -28,8 +28,7 @@ async create(
     // Buscar exámenes existentes del mismo contexto
     const existingExams = await tx.exam.findMany({
       where: {
-        subject_id: dto.subject_id,
-        teacher_id: dto.teacher_id,
+        subject_id: dto.subject_id
       },
       include: {
         exam_questions: {

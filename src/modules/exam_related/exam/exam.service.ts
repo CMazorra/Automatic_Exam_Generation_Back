@@ -24,6 +24,10 @@ async create(
     // Normalizar preguntas
     const normalizedQuestions = [...questions].sort((a, b) => a - b);
 
+
+
+
+    
     // Buscar exámenes existentes del mismo contexto
     const existingExams = await tx.exam.findMany({
       where: {
@@ -190,9 +194,7 @@ async generated(data: GenerateExamDto) {
 
   const exam = await this.prisma.exam.findUnique({
     where: { id: data.exam_id },
-    include: {
-      parameters: true,
-    },
+    include: { parameters: true },
   });
 
   if (!exam || !exam.parameters) {
@@ -213,20 +215,30 @@ async generated(data: GenerateExamDto) {
   }
 
   // =========================
-  // Validaciones básicas
+  // 1️⃣ Obtener sub_topic_ids de los temas
   // =========================
 
-  if (!data.questionDistribution || data.questionDistribution.length === 0) {
+  const subTopics = await this.prisma.sub_Topic.findMany({
+    where: {
+      topic: {
+        name: { in: topics },
+      },
+    },
+    select: { id: true },
+  });
+
+  const subTopicIds = subTopics.map(st => st.id);
+
+  if (subTopicIds.length === 0) {
     throw new BadRequestException(
-      'Debe especificar la distribución de preguntas',
+      'No se encontraron subtemas asociados a los temas de la parametrización',
     );
   }
 
+  // =========================
+  // 2️⃣ Para cada tipo → pool filtrado por sub_topic_ids
+  // =========================
   let typeCombos: Question[][][] = [];
-
-  // =========================
-  // 1️⃣ Para cada tipo → pool filtrado por topics
-  // =========================
 
   for (const dist of data.questionDistribution) {
     const { type, amount } = dist;
@@ -236,21 +248,15 @@ async generated(data: GenerateExamDto) {
         subject_id: data.subject_id,
         type: type,
         teacher_id: data.teacher_id,
-        sub_topic: {
-          topic: {
-            name: {
-              in: topics, // 🔑 TEMAS DESDE PARAMETERS
-            },
-          },
-        },
+        sub_topic_id: { in: subTopicIds },
       },
     });
 
     if (available.length < amount) {
       throw new NotFoundException(
-        `No hay suficientes preguntas del tipo "${type}" ` +
-        `para los temas [${topics.join(', ')}]. ` +
-        `(Hay ${available.length}, se necesitan ${amount})`,
+        `No hay suficientes preguntas del tipo "${type}" para los temas [${topics.join(
+          ', ',
+        )}]. (Hay ${available.length}, se necesitan ${amount})`,
       );
     }
 
@@ -259,7 +265,7 @@ async generated(data: GenerateExamDto) {
   }
 
   // =========================
-  // 2️⃣ Producto cartesiano
+  // 3️⃣ Generar combinaciones completas
   // =========================
 
   const allPossibleExams = cartesian(typeCombos);
@@ -271,7 +277,7 @@ async generated(data: GenerateExamDto) {
   }
 
   // =========================
-  // 3️⃣ Preguntas ya existentes
+  // 4️⃣ Preguntas ya existentes en este examen
   // =========================
 
   const existing = await this.prisma.exam_Question.findMany({
@@ -279,30 +285,24 @@ async generated(data: GenerateExamDto) {
     select: { question_id: true },
   });
 
-  const existingIds = existing
-    .map(e => e.question_id)
-    .sort((a, b) => a - b);
+  const existingIds = existing.map(e => e.question_id).sort((a, b) => a - b);
 
   // =========================
-  // 4️⃣ Buscar combinación nueva
+  // 5️⃣ Buscar combinación nueva
   // =========================
 
   for (const candidate of allPossibleExams) {
 
-    const candidateIds = candidate
-      .map(q => q.id)
-      .sort((a, b) => a - b);
+    const candidateIds = candidate.map(q => q.id).sort((a, b) => a - b);
 
     const isDuplicate =
       existingIds.length === candidateIds.length &&
       existingIds.every((id, i) => id === candidateIds[i]);
 
-    if (isDuplicate) {
-      continue;
-    }
+    if (isDuplicate) continue;
 
     // =========================
-    // 5️⃣ Insertar preguntas
+    // 6️⃣ Insertar preguntas
     // =========================
 
     await this.prisma.exam_Question.createMany({
@@ -322,12 +322,11 @@ async generated(data: GenerateExamDto) {
   }
 
   // =========================
-  // 6️⃣ Sin combinaciones nuevas
+  // 7️⃣ Sin combinaciones nuevas
   // =========================
 
   throw new BadRequestException(
-    'No es posible generar una nueva combinación. ' +
-    'Todas las combinaciones posibles ya existen para este examen.',
+    'No es posible generar una nueva combinación. Todas las combinaciones posibles ya existen para este examen.',
   );
 }
 

@@ -57,15 +57,24 @@ async create(
     }
 
     // Obtener información completa de las preguntas
-    const dbQuestions = await tx.question.findMany({
-      where: {
-        id: { in: normalizedQuestions },
-      },
+const dbQuestions = await tx.question.findMany({
+  where: {
+    id: { in: normalizedQuestions },
+  },
+  select: {
+    type: true,
+    sub_topic: {
       select: {
-        type: true,
-        topic_id: true,
+        topic: {
+          select: {
+            name: true,
+          },
+        },
       },
-    });
+    },
+  },
+});
+
 
     const totalQuestions = dbQuestions.length;
 
@@ -87,11 +96,13 @@ async create(
     const amount_quest = `TOTAL:${totalQuestions}`;
 
     // Calcular topics involucrados
-    const quest_topics = Array.from(
-      new Set(dbQuestions.map(q => q.topic_id)),
-    )
-      .sort((a, b) => a - b)
-      .join(',');
+const quest_topics = Array.from(
+  new Set(
+    dbQuestions.map(q => q.sub_topic.topic.name),
+  ),
+)
+  .sort()
+  .join(',');
 
     // Buscar parámetros existentes
     let parameters = await tx.parameters.findFirst({

@@ -18,12 +18,6 @@ async create(
   dto: CreateExamDto,
   questions: number[] = [],
 ) {
-  // VALIDACIÓN 1: no permitir exámenes sin preguntas
-  if (!questions || questions.length === 0) {
-    throw new BadRequestException(
-      'No se puede crear un examen sin preguntas',
-    );
-  }
 
   return this.prisma.$transaction(async (tx) => {
 
